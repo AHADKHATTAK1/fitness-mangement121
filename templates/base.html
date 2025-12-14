@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gym Manager{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#7928ca">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(260, 80%, 60%);
+            --primary-dark: hsl(260, 80%, 45%);
+            --secondary: hsl(200, 90%, 55%);
+            --bg-dark: hsl(230, 20%, 10%);
+            --bg-card: hsla(230, 20%, 15%, 0.6);
+            --text: hsl(0, 0%, 95%);
+            --text-muted: hsl(0, 0%, 70%);
+            --success: hsl(140, 70%, 50%);
+            --error: hsl(0, 80%, 60%);
+            --border: hsla(0, 0%, 100%, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(at 10% 20%, hsla(260, 80%, 30%, 0.3) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, hsla(200, 90%, 30%, 0.3) 0px, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        nav .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px hsla(260, 80%, 60%, 0.2);
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px hsla(260, 80%, 60%, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary), hsl(200, 90%, 40%));
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), hsl(140, 70%, 40%));
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error), hsl(0, 80%, 45%));
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: hsla(0, 0%, 100%, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px hsla(260, 80%, 60%, 0.2);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .flash {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .flash.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .flash.error {
+            border-left: 4px solid var(--error);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: hsla(0, 0%, 100%, 0.03);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .badge.paid {
+            background: hsla(140, 70%, 50%, 0.2);
+            color: var(--success);
+        }
+
+        .badge.unpaid {
+            background: hsla(0, 80%, 60%, 0.2);
+            color: var(--error);
+        }
+
+        /* Member Photo */
+        .member-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    {% if session.logged_in %}
+    <nav>
+        <div class="nav-content">
+            <div class="logo" style="display: flex; align-items: center; gap: 0.5rem;">
+                {% if gym_details.logo %}
+                <img src="{{ url_for('static', filename='uploads/' + gym_details.logo) }}" alt="Logo"
+                    style="height: 40px; width: auto; border-radius: 8px;">
+                {% endif %}
+                {{ gym_details.name }}
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('add_member') }}">Add Member</a>
+                <a href="{{ url_for('fees') }}">Fees</a>
+                <a href="{{ url_for('settings') }}">⚙️ Settings</a>
+
+                {% if user_plan == 'free_lifetime' %}
+                <span class="badge" style="background: linear-gradient(135deg, gold, orange); color: black;">🏆
+                    Premium</span>
+                {% else %}
+                <a href="#"
+                    onclick="alert('Please pay your monthly subscription of $60 to continue using all features.')"
+                    style="text-decoration: none;">
+                    <span class="badge"
+                        style="background: hsla(0, 80%, 60%, 0.2); color: var(--error); border: 1px solid var(--error);">
+                        ⚠️ Standard: $60/mo (Due)
+                    </span>
+                </a>
+                {% endif %}
+
+                <a href="#" onclick="shareApp()" style="text-decoration: none; margin-right: 1rem;">
+                    <span class="badge" style="background: var(--primary); color: white; cursor: pointer;">
+                        📤 Share App
+                    </span>
+                </a>
+
+                <script>
+                    function shareApp() {
+                        if (navigator.share) {
+                            navigator.share({
+                                title: 'Gym Manager Pro',
+                                text: 'Check out my gym management app!',
+                                url: window.location.href
+                            });
+                        } else {
+                            navigator.clipboard.writeText(window.location.href);
+                            alert('Link copied to clipboard! Send it to your mobile.');
+                        }
+                    }
+                </script>
+
+                <a href="{{ url_for('logout') }}" style="color: var(--error); font-weight: 600; text-decoration: none;">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.8rem; margin-top: auto;">
+        <p>
+            <span style="color: var(--success);">●</span> System Online &nbsp;|&nbsp;
+            <span>💾 Data Secure (Auto-Save Active)</span> &nbsp;|&nbsp;
+            <span>🔒 Secure Connection</span>
+        </p>
+    </div>
+
+    <script>
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const flashes = document.querySelectorAll('.flash');
+            flashes.forEach(flash => {
+                flash.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => flash.remove(), 300);
+            });
+        }, 5000);
+    </script>
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}");
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installBtn = document.createElement('button');
+        installBtn.style.display = 'none';
+        installBtn.style.position = 'fixed';
+        installBtn.style.bottom = '20px';
+        installBtn.style.right = '20px';
+        installBtn.style.zIndex = '9999';
+        installBtn.style.padding = '1rem 2rem';
+        installBtn.style.background = 'var(--primary)';
+        installBtn.style.color = 'white';
+        installBtn.style.border = 'none';
+        installBtn.style.borderRadius = '50px';
+        installBtn.style.fontWeight = 'bold';
+        installBtn.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+        installBtn.style.cursor = 'pointer';
+        installBtn.innerText = '📲 Install App';
+        document.body.appendChild(installBtn);
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', (e) => {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        // Offline Indicator
+        window.addEventListener('offline', () => {
+            const badge = document.createElement('div');
+            badge.id = 'offline-badge';
+            badge.innerText = '📡 You are Offline';
+            badge.style.position = 'fixed';
+            badge.style.top = '0';
+            badge.style.left = '0';
+            badge.style.width = '100%';
+            badge.style.background = 'var(--error)';
+            badge.style.color = 'white';
+            badge.style.textAlign = 'center';
+            badge.style.padding = '0.5rem';
+            badge.style.zIndex = '10000';
+            document.body.appendChild(badge);
+        });
+
+        window.addEventListener('online', () => {
+            const badge = document.getElementById('offline-badge');
+            if (badge) badge.remove();
+        });
+    </script>
+</body>
+
+</html>

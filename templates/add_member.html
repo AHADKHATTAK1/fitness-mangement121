@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Add Member - Gym Manager{% endblock %}
+
+{% block content %}
+<style>
+    .camera-container {
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    #camera-video {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 12px;
+        border: 2px solid var(--border);
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    #captured-image {
+        max-width: 400px;
+        width: 100%;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .camera-controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .preview-image {
+        max-width: 400px;
+        width: 100%;
+        border-radius: 12px;
+        margin-top: 1rem;
+    }
+</style>
+
+<h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">Add New Member</h1>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <form method="POST" enctype="multipart/form-data" id="member-form">
+        <div class="form-group">
+            <label for="name">Member Name *</label>
+            <input type="text" id="name" name="name" required placeholder="Enter full name">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number *</label>
+            <input type="tel" id="phone" name="phone" required placeholder="Enter phone number">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email (Optional)</label>
+            <input type="email" id="email" name="email" placeholder="member@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="joined_date">Joining Date (Optional)</label>
+            <input type="date" id="joined_date" name="joined_date" value="{{ today }}"
+                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+        </div>
+
+        <div class="form-group">
+            <label for="membership_type">Membership Type</label>
+            <select id="membership_type" name="membership_type"
+                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                <option value="Gym">Gym</option>
+                <option value="Cardio">Cardio</option>
+                <option value="Personal Training">Personal Training</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group"
+            style="background: var(--bg-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <label for="start_trial" style="margin: 0; cursor: pointer;">
+                    ⏳ Start 3-Day Free Trial?
+                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">
+                        Member can use gym free for 3 days before paying.
+                    </div>
+                </label>
+                <input type="checkbox" id="start_trial" name="start_trial"
+                    style="width: 24px; height: 24px; accent-color: var(--primary);">
+            </div>
+        </div>
+
+        <div class="card"
+            style="margin-bottom: 2rem; border: 1px solid var(--primary); background: hsla(260, 80%, 60%, 0.1);">
+            <h3
+                style="margin-bottom: 1rem; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>💰</span> Initial Payment (Optional)
+            </h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <label for="initial_month">Admission Month</label>
+                    <select name="initial_month" id="initial_month"
+                        style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                        {% for m in available_months %}
+                        <option value="{{ m.value }}" {% if m.value==current_month %}selected{% endif %}>{{ m.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="initial_amount">Amount Paid</label>
+                    <input type="number" id="initial_amount" name="initial_amount" placeholder="e.g 2000" min="0"
+                        step="0.01">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Member Photo</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <label for="photo" class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+                    📁 Upload Photo
+                </label>
+                <button type="button" id="open-camera-btn" class="btn btn-secondary">
+                    📷 Use Camera
+                </button>
+            </div>
+            <input type="file" id="photo" name="photo" accept="image/*" style="display: none;">
+            <input type="hidden" id="camera_photo" name="camera_photo">
+        </div>
+
+        <div class="camera-container">
+            <video id="camera-video" autoplay playsinline></video>
+            <canvas id="camera-canvas" style="display: none;"></canvas>
+            <img id="captured-image" alt="Captured photo">
+
+            <div class="camera-controls" id="camera-controls" style="display: none;">
+                <button type="button" id="capture-btn" class="btn btn-success">📸 Capture</button>
+                <button type="button" id="retake-btn" class="btn btn-secondary" style="display: none;">🔄
+                    Retake</button>
+                <button type="button" id="close-camera-btn" class="btn btn-danger">❌ Close</button>
+            </div>
+
+            <img id="preview-image" class="preview-image" style="display: none;" alt="Preview">
+        </div>
+
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1.5rem;">
+            ✅ Add Member
+        </button>
+    </form>
+</div>
+
+<script>
+    let stream = null;
+    const video = document.getElementById('camera-video');
+    const canvas = document.getElementById('camera-canvas');
+    const capturedImage = document.getElementById('captured-image');
+    const cameraControls = document.getElementById('camera-controls');
+    const openCameraBtn = document.getElementById('open-camera-btn');
+    const closeCameraBtn = document.getElementById('close-camera-btn');
+    const captureBtn = document.getElementById('capture-btn');
+    const retakeBtn = document.getElementById('retake-btn');
+    const cameraPhotoInput = document.getElementById('camera_photo');
+    const photoInput = document.getElementById('photo');
+    const previewImage = document.getElementById('preview-image');
+
+    // File upload preview
+    photoInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                cameraPhotoInput.value = ''; // Clear camera data if file uploaded
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    openCameraBtn.addEventListener('click', async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user' }
+            });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            cameraControls.style.display = 'flex';
+            capturedImage.style.display = 'none';
+            captureBtn.style.display = 'inline-block';
+            retakeBtn.style.display = 'none';
+            previewImage.style.display = 'none';
+            photoInput.value = ''; // Clear file input if camera used
+        } catch (err) {
+            alert('Camera access denied or not available: ' + err.message);
+        }
+    });
+
+    closeCameraBtn.addEventListener('click', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        video.style.display = 'none';
+        cameraControls.style.display = 'none';
+        capturedImage.style.display = 'none';
+    });
+
+    captureBtn.addEventListener('click', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+
+        const imageData = canvas.toDataURL('image/png');
+        capturedImage.src = imageData;
+        capturedImage.style.display = 'block';
+        cameraPhotoInput.value = imageData;
+
+        video.style.display = 'none';
+        captureBtn.style.display = 'none';
+        retakeBtn.style.display = 'inline-block';
+
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+    });
+
+    retakeBtn.addEventListener('click', async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user' }
+            });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            capturedImage.style.display = 'none';
+            captureBtn.style.display = 'inline-block';
+            retakeBtn.style.display = 'none';
+            cameraPhotoInput.value = '';
+        } catch (err) {
+            alert('Camera access denied: ' + err.message);
+        }
+    });
+
+    // Sync Joining Date with Admission Month
+    const joinedDateInput = document.getElementById('joined_date');
+    const initialMonthSelect = document.getElementById('initial_month');
+
+    if (joinedDateInput && initialMonthSelect) {
+        joinedDateInput.addEventListener('change', function () {
+            if (this.value) {
+                // value is YYYY-MM-DD, take YYYY-MM
+                const yearMonth = this.value.substring(0, 7);
+                // Try to simple match first
+                initialMonthSelect.value = yearMonth;
+
+                // If the month isn't in the list (e.g. too far future/past), it won't change.
+                // You could check initialMonthSelect.value to see if it updated, but this is usually sufficient.
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Scanner - Gym Manager{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <h1 style="margin-bottom: 1.5rem;">📷 Scan Member Card</h1>
+
+    <div id="reader" style="width: 100%; min-height: 400px; background: black; border-radius: 12px; overflow: hidden;">
+    </div>
+
+    <p style="margin-top: 1rem; color: var(--text-muted);">Point camera at the QR code on the member's card.</p>
+
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Stop Scanning</a>
+    </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    function onScanSuccess(decodedText, decodedResult) {
+        // Handle the scanned code as you like, for example:
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+
+        // Redirect to check page
+        window.location.href = "{{ url_for('scan_check', member_id='Placeholder') }}".replace('Placeholder', decodedText);
+
+        // Stop scanning
+        html5QrcodeScanner.clear();
+    }
+
+    function onScanFailure(error) {
+        // handle scan failure, usually better to ignore and keep scanning.
+        // console.warn(`Code scan error = ${error}`);
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false);
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+</script>
+{% endblock %}

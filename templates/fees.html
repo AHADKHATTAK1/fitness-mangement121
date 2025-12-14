@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Fees - Gym Manager{% endblock %}
+
+{% block content %}
+<h1
+    style="font-size: 2.5rem; font-weight: 800; margin-bottom: 2rem; background: linear-gradient(135deg, white, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+    Record Monthly Fees</h1>
+
+<div class="card"
+    style="max-width: 600px; margin: 0 auto; border: 1px solid hsla(260, 80%, 60%, 0.2); background: linear-gradient(145deg, hsla(230, 20%, 15%, 0.6), hsla(230, 20%, 10%, 0.9)); box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.2);">
+    <form method="POST">
+        <div class="form-group">
+            <label for="member_id">Select Member *</label>
+            <select id="member_id" name="member_id" required
+                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                <option value="">-- Choose a member --</option>
+                {% for member in members %}
+                <option value="{{ member.id }}">{{ member.name }} (ID: {{ member.id }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="month">Month *</label>
+            <select id="month" name="month" required
+                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                {% for m in available_months %}
+                <option value="{{ m.value }}" {% if m.value==current_month %}selected{% endif %}>{{ m.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount (optional)</label>
+            <input type="number" id="amount" name="amount" step="0.01" placeholder="Enter fee amount"
+                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+        </div>
+
+        <button type="submit" class="btn btn-success" style="width: 100%;">
+            💰 Record Payment
+        </button>
+    </form>
+</div>
+
+<div class="card" style="margin-top: 2rem;">
+    <h2 style="margin-bottom: 1.5rem;">All Members</h2>
+    {% if members %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Joined Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+            <tr>
+                <td>{{ member.id }}</td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.phone }}</td>
+                <td>{{ member.joined_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No members yet. Add some members first!</p>
+    {% endif %}
+</div>
+{% endblock %}

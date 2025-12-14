@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Super Admin - Approvals{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 2rem auto;">
+    <h1 style="margin-bottom: 2rem; color: var(--primary);">🛡️ Super Admin - Payment Approvals</h1>
+
+    {% if pending_users %}
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Joined</th>
+                <th>Proof</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in pending_users %}
+            <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.joined }}</td>
+                <td>
+                    {% if u.proof %}
+                    <a href="{{ url_for('static', filename='uploads/' + u.proof) }}" target="_blank">
+                        <img src="{{ url_for('static', filename='uploads/' + u.proof) }}"
+                            style="height: 50px; border-radius: 4px;">
+                        View Full
+                    </a>
+                    {% else %}
+                    No Proof
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('approve_payment', target_username=u.username) }}" class="btn btn-success"
+                        onclick="return confirm('Approve this user?')">
+                        ✅ Approve
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; color: var(--text-muted); padding: 2rem;">No pending approvals.</p>
+    {% endif %}
+</div>
+{% endblock %}

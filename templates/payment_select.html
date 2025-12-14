@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Select Payment Method - Gym Manager{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 2rem auto;">
+    <h1 style="text-align: center; margin-bottom: 2rem;">Choose Payment Method</h1>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <!-- Option A: Stripe (Auto) -->
+        <div class="card" style="text-align: center; transition: transform 0.2s; cursor: pointer;"
+            onclick="document.getElementById('stripe-form').submit()">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">💳</div>
+            <h2 style="color: var(--primary); margin-bottom: 1rem;">Credit / Debit Card</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                International Payment via Stripe.<br>
+                <strong>Instant Activation</strong> ✅
+            </p>
+            <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">$60.00</div>
+
+            <form id="stripe-form" action="{{ url_for('create_checkout_session') }}" method="POST">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Pay Securely</button>
+            </form>
+        </div>
+
+        <!-- Option B: Manual (Pakistan) -->
+        <a href="{{ url_for('manual_payment') }}" style="text-decoration: none; color: inherit;">
+            <div class="card" style="text-align: center; transition: transform 0.2s; height: 100%;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏦</div>
+                <h2 style="color: var(--success); margin-bottom: 1rem;">JazzCash / Bank</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                    Local Transfer in Pakistan.<br>
+                    <strong>Manual Approval (1-24h)</strong> 🕒
+                </p>
+                <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Rs. 2000</div>
+                <!-- Django code mentioned 2000 PKR -->
+
+                <button class="btn btn-success" style="width: 100%;">Upload Screenshot</button>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

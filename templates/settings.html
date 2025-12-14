@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Gym Manager{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">Gym Settings</h1>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="gym_name">Gym Name</label>
+            <input type="text" id="gym_name" name="gym_name" value="{{ details.name }}" required
+                placeholder="Enter your gym name">
+        </div>
+
+        <div class="form-group">
+            <label>Currency Symbol</label>
+            <select name="currency"
+                style="width: 100%; padding: 0.8rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px;">
+                <option value="$" {% if details.currency=='$' %}selected{% endif %}>$ (USD)</option>
+                <option value="Rs" {% if details.currency=='Rs' %}selected{% endif %}>Rs (PKR)</option>
+                <option value="€" {% if details.currency=='€' %}selected{% endif %}>€ (EUR)</option>
+                <option value="£" {% if details.currency=='£' %}selected{% endif %}>£ (GBP)</option>
+                <option value="¥" {% if details.currency=='¥' %}selected{% endif %}>¥ (JPY)</option>
+                <option value="AED" {% if details.currency=='AED' %}selected{% endif %}>AED</option>
+                <option value="INR" {% if details.currency=='INR' %}selected{% endif %}>INR</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Gym Logo</label>
+            {% if details.logo %}
+            <div style="margin-bottom: 1rem;">
+                <img src="{{ url_for('static', filename='uploads/' + details.logo) }}" alt="Gym Logo"
+                    style="max-width: 200px; border-radius: 8px;">
+            </div>
+            {% endif %}
+
+            <label for="gym_logo" class="btn btn-secondary" style="cursor: pointer; margin: 0; display: inline-block;">
+                📁 Upload New Logo
+            </label>
+            <input type="file" id="gym_logo" name="gym_logo" accept="image/*" style="display: none;"
+                onchange="document.getElementById('file-name').textContent = this.files[0].name">
+            <span id="file-name" style="margin-left: 1rem; color: var(--text-muted);"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1.5rem;">
+            💾 Save Settings
+        </button>
+    </form>
+    </form>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 2rem auto;">
+    <h2 style="margin-bottom: 1.5rem; color: var(--primary);">🧾 Subscription / Billing History</h2>
+    {% if payments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Invoice</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payments %}
+            <tr>
+                <td>{{ p.date }}</td>
+                <td>${{ p.amount }}</td>
+                <td>{{ p.method }}</td>
+                <td><span class="badge paid">{{ p.status }}</span></td>
+                <td>
+                    <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"
+                        onclick="alert('Invoice download simulated.')">
+                        📄 Download
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No billing history found.</p>
+    {% endif %}
+</div>
+{% endblock %}

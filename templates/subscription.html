@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription Required - Gym Manager{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div class="card" style="max-width: 500px; width: 100%; border: 1px solid var(--primary);">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+            <h1
+                style="margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Subscription Required</h1>
+            <p style="color: var(--text-muted);">Your 30-day access has expired or is inactive.</p>
+        </div>
+
+        <div
+            style="background: hsla(260, 80%, 20%, 0.5); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="color: var(--text-muted);">Plan</span>
+                <span style="font-weight: 600;">Standard Monthly</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-muted);">Amount Due</span>
+                <span style="font-size: 1.5rem; font-weight: 700; color: var(--success);">$60.00</span>
+            </div>
+        </div>
+
+        <form action="{{ url_for('create_checkout_session') }}" method="POST">
+            <button type="submit" class="btn btn-success"
+                style="width: 100%; padding: 1rem; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: transform 0.1s;">
+                <span>Pay with Card 💳</span>
+            </button>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                Secured by <strong>Stripe</strong>. You will be redirected to a secure payment page.
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

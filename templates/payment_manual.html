@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Manual Payment - Gym Manager{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto;">
+    <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--success);">JazzCash / Bank Transfer</h2>
+
+    <div
+        style="background: hsla(200, 10%, 20%, 0.5); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px dashed var(--border);">
+        <p style="margin-bottom: 0.5rem;"><strong>Bank:</strong> Meezan Bank</p>
+        <p style="margin-bottom: 0.5rem;"><strong>Account:</strong> 0101-XXXX-XXXX-XX</p>
+        <p style="margin-bottom: 0.5rem;"><strong>Title:</strong> Gym Software Inc.</p>
+        <hr style="border-color: var(--border); margin: 0.5rem 0;">
+        <p><strong>JazzCash:</strong> 0300-1234567</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Upload Payment Screenshot</label>
+            <input type="file" name="payment_proof" accept="image/*" required
+                style="padding: 0.5rem; border: 1px solid var(--border); width: 100%; border-radius: 6px;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                Please ensure the Transaction ID is visible.
+            </p>
+        </div>
+
+        <button type="submit" class="btn btn-success" style="width: 100%;">Submit for Approval 🚀</button>
+    </form>
+</div>
+{% endblock %}

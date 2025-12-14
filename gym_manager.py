@@ -1,0 +1,213 @@
+import json
+import os
+from datetime import datetime
+from typing import Dict, List, Optional
+
+class GymManager:
+    def __init__(self, data_file):
+        """Initialize with a specific user's data file"""
+        self.data_file = data_file
+        self.data = self.load_data()
+    
+    def load_data(self) -> Dict:
+        """Load data from JSON file or create new structure"""
+        if os.path.exists(self.data_file):
+            try:
+                with open(self.data_file, 'r') as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                return self._create_empty_data()
+        return self._create_empty_data()
+    
+    def _create_empty_data(self) -> Dict:
+        """Create empty data structure"""
+        return {
+            # 'admin' key is no longer used for auth, but kept structure if needed or ignored
+            'admin': None, 
+            'members': {},
+            'fees': {},
+            'next_member_id': 1,
+            'gym_details': {
+                'name': 'Gym Manager',
+                'logo': None
+            }
+        }
+    
+    def get_gym_details(self) -> Dict:
+        """Get gym name and logo"""
+        # Ensure key exists for older data files
+        if 'gym_details' not in self.data:
+            self.data['gym_details'] = {'name': 'Gym Manager', 'logo': None}
+            self.save_data()
+        return self.data['gym_details']
+
+    def update_gym_details(self, name: str, logo_path: Optional[str] = None, currency: str = '$') -> bool:
+        """Update gym name, logo, and currency"""
+        if 'gym_details' not in self.data:
+            self.data['gym_details'] = {}
+        
+        self.data['gym_details']['name'] = name
+        self.data['gym_details']['currency'] = currency
+        if logo_path:
+            self.data['gym_details']['logo'] = logo_path
+            
+        self.save_data()
+        return True
+    
+    def save_data(self):
+        """Save data to JSON file"""
+        with open(self.data_file, 'w') as f:
+            json.dump(self.data, f, indent=2)
+
+    def reset_data(self):
+        """Reset everything (Factory Reset) for this user"""
+        self.data = self._create_empty_data()
+        self.save_data()
+        return True
+    
+    # Removed signup_admin, login_admin, has_admin - handled by AuthManager now
+    
+    def add_member(self, name: str, phone: str, photo: str = None, membership_type: str = 'Gym', joined_date: str = None, is_trial: bool = False, email: str = None) -> int:
+        """Add a new member"""
+        member_id = str(self.data['next_member_id'])
+        if not joined_date:
+            joined_date = datetime.now().strftime('%Y-%m-%d')
+            
+        trial_end = None
+        if is_trial:
+            trial_end = (datetime.strptime(joined_date, '%Y-%m-%d') + timedelta(days=3)).strftime('%Y-%m-%d')
+            
+        self.data['members'][member_id] = {
+            'id': member_id,
+            'name': name,
+            'phone': phone,
+            'email': email or '',
+            'photo': photo,
+            'joined_date': joined_date,
+            'active': True,
+            'membership_type': membership_type,
+            'is_trial': is_trial,
+            'trial_end_date': trial_end
+        }
+        self.data['next_member_id'] += 1
+        self.save_data()
+        return int(member_id)
+
+    def update_member(self, member_id: str, name: str, phone: str, membership_type: str, joined_date: Optional[str] = None, email: str = None) -> bool:
+        """Update member details"""
+        if member_id not in self.data['members']:
+            return False
+        
+        self.data['members'][member_id]['name'] = name
+        self.data['members'][member_id]['phone'] = phone
+        self.data['members'][member_id]['membership_type'] = membership_type
+        
+        if email is not None:
+            self.data['members'][member_id]['email'] = email
+        
+        if joined_date:
+            self.data['members'][member_id]['joined_date'] = joined_date
+            
+        self.save_data()
+        return True
+
+    def delete_member(self, member_id: str) -> bool:
+        """Delete a member and their fees"""
+        if member_id not in self.data['members']:
+            return False
+        
+        del self.data['members'][member_id]
+        if member_id in self.data['fees']:
+            del self.data['fees'][member_id]
+            
+        self.save_data()
+        return True
+    
+    def get_all_members(self) -> List[Dict]:
+        """Get all members as a list"""
+        return list(self.data['members'].values())
+    
+    def get_member(self, member_id: str) -> Optional[Dict]:
+        """Get a specific member"""
+        return self.data['members'].get(member_id)
+    
+    def pay_fee(self, member_id: str, month: str, amount: float = 0, paid_date: str = None, notes: str = None) -> bool:
+        """Record fee payment for a member"""
+        if member_id not in self.data['members']:
+            return False
+        
+        if member_id not in self.data['fees']:
+            self.data['fees'][member_id] = {}
+        
+        if not paid_date:
+            paid_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+        self.data['fees'][member_id][month] = {
+            'amount': amount,
+            'paid_date': paid_date,
+            'notes': notes or ''
+        }
+        self.save_data()
+        return True
+    
+    def delete_fee(self, member_id: str, month: str) -> bool:
+        """Delete a fee record"""
+        if member_id not in self.data['fees'] or month not in self.data['fees'][member_id]:
+            return False
+            
+        del self.data['fees'][member_id][month]
+        self.save_data()
+        return True
+
+    def update_fee(self, member_id: str, month: str, amount: float, date: str, notes: str = None) -> bool:
+        """Update a fee record"""
+        if member_id not in self.data['fees'] or month not in self.data['fees'][member_id]:
+            return False
+            
+        self.data['fees'][member_id][month]['amount'] = amount
+        self.data['fees'][member_id][month]['paid_date'] = date
+        if notes is not None:
+            self.data['fees'][member_id][month]['notes'] = notes
+        
+        self.save_data()
+        return True
+
+    def is_fee_paid(self, member_id: str, month: str) -> bool:
+        """Check if fee is paid for a specific month"""
+        if member_id not in self.data['fees']:
+            return False
+        return month in self.data['fees'][member_id]
+    
+    def get_payment_status(self, month: Optional[str] = None) -> Dict[str, List[Dict]]:
+        """Get paid/unpaid members for a specific month"""
+        if month is None:
+            month = datetime.now().strftime('%Y-%m')
+        
+        paid = []
+        unpaid = []
+        
+        for member_id, member in self.data['members'].items():
+            if self.is_fee_paid(member_id, month):
+                fee_info = self.data['fees'][member_id][month]
+                member_copy = member.copy()
+                member_copy['last_paid'] = fee_info['paid_date']
+                member_copy['amount'] = fee_info['amount']
+                paid.append(member_copy)
+            else:
+                unpaid.append(member)
+        
+        return {'paid': paid, 'unpaid': unpaid}
+    
+    def get_member_fee_history(self, member_id: str) -> List[Dict]:
+        """Get fee payment history for a member"""
+        if member_id not in self.data['fees']:
+            return []
+        
+        history = []
+        for month, info in self.data['fees'][member_id].items():
+            history.append({
+                'month': month,
+                'amount': info['amount'],
+                'paid_date': info['paid_date']
+            })
+        return sorted(history, key=lambda x: x['month'], reverse=True)

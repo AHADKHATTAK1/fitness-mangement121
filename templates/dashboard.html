@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Gym Manager{% endblock %}
+
+{% block content %}
+<div
+    style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <h1 style="font-size: 2.5rem; font-weight: 700;">Dashboard</h1>
+
+    <div style="position: relative;">
+        <input type="text" id="memberSearch" onkeyup="filterMembers()" placeholder="🔍 Search members..."
+            style="padding: 0.5rem 0.5rem 0.5rem 2rem; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text); width: 200px; transition: width 0.3s;">
+    </div>
+    <form method="GET" action="{{ url_for('dashboard') }}" style="display: flex; align-items: center; gap: 0.5rem;">
+        <label for="month" style="font-weight: 600;">Month:</label>
+        <select name="month" id="month" onchange="this.form.submit()"
+            style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+            {% for m in available_months %}
+            <option value="{{ m.value }}" {% if m.value==current_month %}selected{% endif %}>{{ m.label }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <a href="{{ url_for('scanner') }}" class="btn btn-secondary"
+        style="background-color: #34495e; border-color: #34495e;">📷 Scan</a>
+    <a href="{{ url_for('download_excel') }}" class="btn btn-success">📊 Excel</a>
+</div>
+</div>
+</div>
+
+<script>
+    function filterMembers() {
+        var input, filter, tables, tr, td, i, j, txtValue;
+        input = document.getElementById("memberSearch");
+        filter = input.value.toUpperCase();
+
+        // Get all tables in the dashboard (Paid and Unpaid)
+        tables = document.getElementsByTagName("table");
+
+        for (j = 0; j < tables.length; j++) {
+            tr = tables[j].getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                // Check Name (col 2) and Phone (col 3) - Index 2 and 3 because of Photo at 0? 
+                // Checking headers: Photo(0), ID(1), Name(2), Phone(3)
+                // Let's check all text content of the row for simplicity
+                td = tr[i].getElementsByTagName("td");
+                if (td.length > 0) {
+                    var rowText = tr[i].textContent || tr[i].innerText;
+                    if (rowText.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Total Members Card -->
+    <div class="card"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+        <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Members</div>
+        <div style="font-size: 2.5rem; font-weight: 700;">{{ total_members }}</div>
+        <div style="font-size: 0.8rem; opacity: 0.8;">Active in {{ current_month }}</div>
+    </div>
+
+    <!-- Revenue Card -->
+    <div class="card"
+        style="background: linear-gradient(135deg, #2af598 0%, #009efd 100%); color: white; border: none;">
+        <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">Revenue Collected</div>
+        <div style="font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+            <span id="revenue-amount">{{ gym_details.currency }} {{ revenue }}</span>
+            <button onclick="toggleRevenue()"
+                style="background: none; border: none; cursor: pointer; color: white; font-size: 1.2rem; opacity: 0.8;">
+                👁️
+            </button>
+        </div>
+        <div style="font-size: 0.8rem; opacity: 0.8;">For {{ current_month }}</div>
+    </div>
+
+    <script>
+        let isRevenueHidden = false;
+        // Use safe templating to avoid JS syntax errors if variable empty
+        const originalRevenue = "{{ gym_details.currency }} {{ revenue }}";
+
+        function toggleRevenue() {
+            const el = document.getElementById('revenue-amount');
+            isRevenueHidden = !isRevenueHidden;
+            if (isRevenueHidden) {
+                el.innerText = "{{ gym_details.currency }} ****";
+            } else {
+                el.innerText = originalRevenue;
+            }
+        }
+    </script>
+
+    <!-- Status Breakdown -->
+    <div class="card" style="display: flex; gap: 1rem; align-items: center; justify-content: space-around;">
+        <div style="text-align: center; cursor: pointer;"
+            onclick="document.getElementById('paid-members').scrollIntoView({behavior: 'smooth'})">
+            <div style="color: var(--success); font-size: 1.5rem; font-weight: 700;">{{ paid|length }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Paid ✅</div>
+        </div>
+        <div style="height: 40px; width: 1px; background: var(--border);"></div>
+        <div style="text-align: center; cursor: pointer;"
+            onclick="document.getElementById('unpaid-members').scrollIntoView({behavior: 'smooth'})">
+            <div style="color: var(--error); font-size: 1.5rem; font-weight: 700;">{{ unpaid|length }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Unpaid ❌</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+</style>
+
+<div class="card" id="paid-members">
+    <h2 style="margin-bottom: 1.5rem; color: var(--success);">✅ Paid Members ({{ current_month }})</h2>
+    {% if paid %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in paid %}
+                <tr>
+                    <td>
+                        {% if member.photo %}
+                        <img src="{{ url_for('static', filename='uploads/' + member.photo) }}" class="member-photo"
+                            alt="{{ member.name }}">
+                        {% else %}
+                        <div class="member-photo"
+                            style="background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                            {{ member.name[0] }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ member.id }}</td>
+                    <td><a href="{{ url_for('member_details', member_id=member.id) }}"
+                            style="color: var(--text); font-weight: 600; text-decoration: none;">{{ member.name }}</a>
+                    </td>
+                    <td>{{ member.phone }}</td>
+                    <td><span class="badge paid">PAID</span></td>
+                    <td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{{ url_for('member_details', member_id=member.id) }}" class="btn btn-success"
+                                style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                                💰 Pay
+                            </a>
+                            <a href="{{ url_for('generate_card', member_id=member.id) }}" class="btn"
+                                style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                📄 Card
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No paid members yet.</p>
+    {% endif %}
+</div>
+
+<div class="card" id="unpaid-members">
+    <h2 style="margin-bottom: 1.5rem; color: var(--error);">❌ Unpaid / Trial Members ({{ current_month }})</h2>
+    {% if unpaid %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in unpaid %}
+                <tr>
+                    <td>
+                        {% if member.photo %}
+                        <img src="{{ url_for('static', filename='uploads/' + member.photo) }}" class="member-photo"
+                            alt="{{ member.name }}">
+                        {% else %}
+                        <div class="member-photo"
+                            style="background: var(--error); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                            {{ member.name[0] }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ member.id }}</td>
+                    <td><a href="{{ url_for('member_details', member_id=member.id) }}"
+                            style="color: var(--text); font-weight: 600; text-decoration: none;">{{ member.name }}</a>
+                    </td>
+                    <td>{{ member.phone }}</td>
+                    <td>
+                        {% if member.is_trial %}
+                        <span class="badge" style="background: hsla(200, 90%, 55%, 0.2); color: var(--secondary);">
+                            ⏳ Trial (Ends {{ member.trial_end_date }})
+                        </span>
+                        {% else %}
+                        <span class="badge unpaid">UNPAID</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="https://wa.me/{{ member.phone|replace(' ', '')|replace('-', '') }}?text=Hello {{ member.name }}, Your gym fee for {{ current_month }} is pending. Please pay soon!"
+                            target="_blank" class="btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.875rem; background-color: #25D366; color: white; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                            💬 WhatsApp
+                        </a>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{{ url_for('member_details', member_id=member.id) }}" class="btn btn-success"
+                                style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                                💰 Pay
+                            </a>
+                            <a href="{{ url_for('generate_card', member_id=member.id) }}" class="btn"
+                                style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                📄 Card
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">All members have paid!</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Gym Manager{% endblock %}
+
+{% block content %}
+<style>
+    .auth-container {
+        max-width: 450px;
+        margin: 4rem auto;
+    }
+
+    .auth-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px hsla(260, 80%, 20%, 0.5);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .auth-header p {
+        color: var(--text-muted);
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>💪 Gym Manager</h1>
+            <p style="margin-bottom: 2rem;">Manage your gym with ease</p>
+        </div>
+
+        <!-- Toggle for Login/Signup -->
+        <div style="display: flex; justify-content: center; margin-bottom: 2rem; gap: 1rem;">
+            <button onclick="showForm('login')" id="btn-login" class="btn"
+                style="flex: 1; background: var(--primary);">Login</button>
+            <button onclick="showForm('signup')" id="btn-signup" class="btn"
+                style="flex: 1; background: transparent; border: 1px solid var(--border);">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <form method="POST" id="form-login">
+            <input type="hidden" name="action" value="login">
+            <div class="form-group">
+                <label for="login_username">Email / Username</label>
+                <input type="text" id="login_username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="login_password">Password</label>
+                <input type="password" id="login_password" name="password" required>
+            </div>
+            <button type="submit" class="btn" style="width: 100%;">Login</button>
+        </form>
+
+        <!-- Signup Form (Hidden by default) -->
+        <form method="POST" id="form-signup" style="display: none;">
+            <input type="hidden" name="action" value="signup">
+            <div class="form-group">
+                <label for="signup_username">New Username / Email</label>
+                <input type="text" id="signup_username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup_password">New Password</label>
+                <input type="password" id="signup_password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="referral_code">Referral Code (Optional)</label>
+                <input type="text" id="referral_code" name="referral_code" placeholder="Enter code for Free Membership">
+                <small style="color: var(--text-muted); font-size: 0.8rem;">Use a code to unlock premium features for
+                    free.</small>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Create Account</button>
+        </form>
+    </div>
+
+    <script>
+        function showForm(type) {
+            const loginForm = document.getElementById('form-login');
+            const signupForm = document.getElementById('form-signup');
+            const btnLogin = document.getElementById('btn-login');
+            const btnSignup = document.getElementById('btn-signup');
+
+            if (type === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                btnLogin.style.background = 'var(--primary)';
+                btnSignup.style.background = 'transparent';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                btnLogin.style.background = 'transparent';
+                btnSignup.style.background = 'var(--secondary)'; // Use secondary color or green for signup
+            }
+        }
+    </script>
+
+    <div style="display: flex; align-items: center; margin: 2rem 0; color: var(--text-muted);">
+        <hr style="flex: 1; border-color: var(--border); opacity: 0.3;">
+        <span style="padding: 0 1rem; font-size: 0.9rem; font-weight: 500;">OR</span>
+        <hr style="flex: 1; border-color: var(--border); opacity: 0.3;">
+    </div>
+
+    <div style="text-align: center;">
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <div id="g_id_onload" data-client_id="540149972190-pmr5d61g3jpj9j6c7h0qi4vs3vu6i0lr.apps.googleusercontent.com"
+            data-login_uri="{{ url_for('google_login', _external=True) }}" data-auto_prompt="true">
+        </div>
+        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="continue_with"
+            data-shape="rectangular" data-logo_alignment="center" data-width="300">
+        </div>
+        <p id="login-helper-text" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+            Instantly <span style="color: var(--primary); cursor: pointer; text-decoration: underline;"
+                onclick="handleGoogleLogin()">Login</span> or <span
+                style="color: var(--primary); cursor: pointer; text-decoration: underline;"
+                onclick="handleGoogleLogin()">Create Account</span> with Google.
+        </p>
+    </div>
+</div>
+</div>
+
+<style>
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        50% {
+            transform: translateX(5px);
+        }
+
+        75% {
+            transform: translateX(-5px);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    .highlight-shake {
+        animation: shake 0.4s ease-in-out;
+        border: 2px solid var(--primary);
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+    function handleGoogleLogin() {
+        if (typeof google === 'undefined' || !google.accounts) {
+            // Show a toast or small message instead of alert if possible, or just wait
+            return;
+        }
+        google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                // Visual feedback: Highlight the main button
+                const btnContainer = document.querySelector('.g_id_signin');
+                if (btnContainer) {
+                    btnContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    btnContainer.classList.add('highlight-shake');
+
+                    // Remove class after animation to allow re-triggering
+                    setTimeout(() => {
+                        btnContainer.classList.remove('highlight-shake');
+                    }, 1000);
+
+                    // Update helper text temporarily
+                    const helperText = document.getElementById('login-helper-text');
+                    if (helperText) {
+                        const originalText = helperText.innerHTML;
+                        helperText.innerHTML = '<span style="color: var(--primary); font-weight: bold;">Please tap the main Google button above ☝️</span>';
+                        setTimeout(() => {
+                            helperText.innerHTML = originalText;
+                        }, 3000);
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+{% endblock %}

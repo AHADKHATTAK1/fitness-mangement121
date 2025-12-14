@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Fee - {{ member.name }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('member_details', member_id=member.id) }}"
+            style="color: var(--text-muted); text-decoration: none;">&larr; Back to Member</a>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">✏️ Edit Payment</h2>
+        <p><strong>Member:</strong> {{ member.name }}</p>
+        <p><strong>Month:</strong> {{ month }}</p>
+
+        <form method="POST" style="margin-top: 1.5rem;">
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" name="amount" value="{{ fee.amount }}" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Payment Date (YYYY-MM-DD HH:MM:SS)</label>
+                <input type="text" id="date" name="date" value="{{ fee.paid_date }}" required>
+            </div>
+
+            <button type="submit" class="btn btn-success" style="width: 100%;">💾 Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

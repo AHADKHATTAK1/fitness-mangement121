@@ -1,0 +1,48 @@
+{
+  "admin": null,
+  "members": {
+    "1": {
+      "id": "1",
+      "name": "MUHAMMAD Ahad Khan Khattak",
+      "phone": "03015688619",
+      "photo": null,
+      "membership_type": "Gym",
+      "joined_date": "2025-07-21",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "2": {
+      "id": "2",
+      "name": "Khan jee",
+      "phone": "030166659",
+      "email": "mashalkhttak@gmail.com",
+      "photo": null,
+      "joined_date": "2025-09-11",
+      "active": true,
+      "membership_type": "Cardio",
+      "is_trial": false,
+      "trial_end_date": null
+    }
+  },
+  "fees": {
+    "1": {},
+    "2": {
+      "2025-02": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": ""
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-14 16:48:46",
+        "notes": ""
+      }
+    }
+  },
+  "next_member_id": 3,
+  "gym_details": {
+    "name": "ZAIDAN ",
+    "logo": null,
+    "currency": "Rs"
+  }
+}

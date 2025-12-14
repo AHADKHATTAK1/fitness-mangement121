@@ -1,0 +1,42 @@
+{
+  "mashalkhttak@gmail.com": {
+    "password": "054e3b308708370ea029dc2ebd1646c498d59d7203c9e1a44cf0484df98e581a",
+    "joined_at": "2025-12-13 00:59:00",
+    "referral_code": "MIGRATED",
+    "plan": "free"
+  },
+  "qqqq": {
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
+    "joined_at": "2025-12-13 01:19:21",
+    "referral_code": "free",
+    "plan": "free_lifetime"
+  },
+  "wwwww": {
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
+    "joined_at": "2025-12-13 01:55:33",
+    "referral_code": "",
+    "plan": "standard",
+    "subscription_expiry": "2026-01-12"
+  },
+  "vvvvv": {
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
+    "joined_at": "2025-12-13 02:32:30",
+    "referral_code": "",
+    "plan": "standard",
+    "subscription_expiry": "2026-01-12"
+  },
+  "pppp": {
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
+    "joined_at": "2025-12-13 15:18:18",
+    "referral_code": "free",
+    "plan": "free_lifetime",
+    "subscription_expiry": "2099-12-31"
+  },
+  "zaidanfitnessgym@gmail.com": {
+    "password": "4285e48cac0fa2bc46e52f53460d41d0c4b813b57f78678d3c2020cae1413146",
+    "joined_at": "2025-12-13 20:11:18",
+    "referral_code": "FREE",
+    "plan": "free_lifetime",
+    "subscription_expiry": "2099-12-31"
+  }
+}
