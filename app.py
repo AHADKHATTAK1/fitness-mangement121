@@ -278,6 +278,61 @@ def schedule():
         
     return render_template('schedule.html', classes=gym.get_classes(), members=gym.get_all_members())
 
+@app.route('/expenses', methods=['GET', 'POST'])
+def expenses():
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    if request.method == 'POST':
+        category = request.form.get('category')
+        amount = float(request.form.get('amount') or 0)
+        date = request.form.get('date')
+        description = request.form.get('description', '')
+        
+        if gym.add_expense(category, amount, date, description):
+            flash(f'Expense of {amount} recorded successfully!', 'success')
+        else:
+            flash('Failed to add expense!', 'error')
+        
+        return redirect(url_for('expenses'))
+    
+    # Get current month
+    current_month = datetime.now().strftime('%Y-%m')
+    
+    # Get expenses for current month
+    expenses_list = gym.get_expenses(current_month)
+    
+    # Calculate P&L
+    pl_data = gym.calculate_profit_loss(current_month)
+    
+    # Available months for dropdown
+    available_months = []
+    for i in range(12):
+        month_date = datetime.now() - timedelta(days=30*i)
+        available_months.append({
+            'value': month_date.strftime('%Y-%m'),
+            'label': month_date.strftime('%B %Y')
+        })
+    
+    return render_template('expenses.html',
+                         expenses=expenses_list,
+                         pl_data=pl_data,
+                         current_month=current_month,
+                         available_months=available_months,
+                         gym_details=gym.get_gym_details())
+
+@app.route('/delete_expense/<expense_id>', methods=['POST'])
+def delete_expense(expense_id):
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    if gym.delete_expense(expense_id):
+        flash('Expense deleted successfully!', 'success')
+    else:
+        flash('Failed to delete expense!', 'error')
+    
+    return redirect(url_for('expenses'))
+
 @app.route('/book_class/<class_id>', methods=['POST'])
 def book_class(class_id):
     gym = get_gym()

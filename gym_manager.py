@@ -26,6 +26,7 @@ class GymManager:
             'admin': None, 
             'members': {},
             'fees': {},
+            'expenses': {},  # NEW: Track gym expenses
             'next_member_id': 1,
             'gym_details': {
                 'name': 'Gym Manager',
@@ -127,6 +128,67 @@ class GymManager:
             
         self.save_data()
         return True
+    
+    # Expense Management Methods
+    def add_expense(self, category: str, amount: float, date: str, description: str = '') -> bool:
+        """Add an expense record"""
+        if 'expenses' not in self.data:
+            self.data['expenses'] = {}
+        
+        expense_id = f"EXP{len(self.data['expenses']) + 1:04d}"
+        self.data['expenses'][expense_id] = {
+            'id': expense_id,
+            'category': category,
+            'amount': amount,
+            'date': date,
+            'description': description
+        }
+        self.save_data()
+        return True
+    
+    def get_expenses(self, month: str = None) -> list:
+        """Get all expenses or filter by month"""
+        if 'expenses' not in self.data:
+            return []
+        
+        expenses = list(self.data['expenses'].values())
+        
+        if month:
+            expenses = [e for e in expenses if e['date'].startswith(month)]
+        
+        # Sort by date descending
+        expenses.sort(key=lambda x: x['date'], reverse=True)
+        return expenses
+    
+    def delete_expense(self, expense_id: str) -> bool:
+        """Delete an expense"""
+        if 'expenses' not in self.data or expense_id not in self.data['expenses']:
+            return False
+        
+        del self.data['expenses'][expense_id]
+        self.save_data()
+        return True
+    
+    def calculate_profit_loss(self, month: str) -> Dict:
+        """Calculate P&L for a given month"""
+        # Get revenue
+        status = self.get_payment_status(month)
+        revenue = sum(m.get('amount', 0) for m in status['paid'])
+        
+        # Get expenses
+        expenses = self.get_expenses(month)
+        total_expenses = sum(e['amount'] for e in expenses)
+        
+        # Calculate profit
+        net_profit = revenue - total_expenses
+        profit_margin = (net_profit / revenue * 100) if revenue > 0 else 0
+        
+        return {
+            'revenue': revenue,
+            'expenses': total_expenses,
+            'net_profit': net_profit,
+            'profit_margin': round(profit_margin, 2)
+        }
     
     def get_all_members(self) -> List[Dict]:
         """Get all members as a list"""

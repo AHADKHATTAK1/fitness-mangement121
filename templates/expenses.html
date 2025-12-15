@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Expense Tracking - Gym Manager{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 2rem;">
+    <h1
+        style="font-size: 2.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;">
+        💼 Expense Tracking & P&L
+    </h1>
+    <p style="color: var(--text-muted);">Track expenses andcalculate profit</p>
+</div>
+
+<!-- P&L Overview Card -->
+<div class="card"
+    style="margin-bottom: 2rem; background: linear-gradient(145deg, hsla(230, 20%, 15%, 0.8), hsla(230, 20%, 10%, 0.95));">
+    <h2 style="margin-bottom: 1.5rem;">📊 Monthly P&L - {{ current_month }}</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+        <!-- Revenue -->
+        <div
+            style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #2ecc71, #27ae60); border-radius: 12px; color: white;">
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">💰 Revenue</div>
+            <div style="font-size: 2rem; font-weight: bold;">{{ gym_details.currency or '$' }}{{ pl_data.revenue }}
+            </div>
+        </div>
+
+        <!-- Expenses -->
+        <div
+            style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 12px; color: white;">
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">💸 Expenses</div>
+            <div style="font-size: 2rem; font-weight: bold;">{{ gym_details.currency or '$' }}{{ pl_data.expenses }}
+            </div>
+        </div>
+
+        <!-- Net Profit -->
+        <div
+            style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, {% if pl_data.net_profit >= 0 %}#3498db, #2980b9{% else %}#95a5a6, #7f8c8d{% endif %}); border-radius: 12px; color: white;">
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">
+                {% if pl_data.net_profit >= 0 %}📈 Net Profit{% else %}📉 Net Loss{% endif %}
+            </div>
+            <div style="font-size: 2rem; font-weight: bold;">{{ gym_details.currency or '$' }}{{ pl_data.net_profit }}
+            </div>
+            <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.5rem;">{{ pl_data.profit_margin }}% margin</div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Expense Form -->
+<div class="card" style="margin-bottom: 2rem;">
+    <h2 style="margin-bottom: 1.5rem;">➕ Add Expense</h2>
+    <form method="POST">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" required
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                    <option value="">-- Select Category --</option>
+                    <option value="Rent">🏢 Rent</option>
+                    <option value="Utilities">💡 Utilities (Electric, Water)</option>
+                    <option value="Equipment">🏋️ Equipment</option>
+                    <option value="Salaries">💼 Salaries</option>
+                    <option value="Maintenance">🔧 Maintenance</option>
+                    <option value="Marketing">📢 Marketing</option>
+                    <option value="Other">📝 Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount *</label>
+                <input type="number" id="amount" name="amount" step="0.01" required placeholder="Enter amount"
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date *</label>
+                <input type="date" id="date" name="date" required value="{{ current_month }}-01"
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+            <label for="description">Description (optional)</label>
+            <textarea id="description" name="description" rows="2" placeholder="Add notes about this expense..."
+                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
+            💾 Save Expense
+        </button>
+    </form>
+</div>
+
+<!-- Expense History -->
+<div class="card">
+    <h2 style="margin-bottom: 1.5rem;">📜 Expense History - {{ current_month }}</h2>
+
+    {% if expenses %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.date }}</td>
+                <td>
+                    <span class="badge" style="background: var(--error);">{{ expense.category }}</span>
+                </td>
+                <td>{{ gym_details.currency or '$' }}{{ expense.amount }}</td>
+                <td>{{ expense.description or '-' }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('delete_expense', expense_id=expense.id) }}"
+                        style="display: inline;">
+                        <button type="submit" class="btn btn-secondary"
+                            style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"
+                            onclick="return confirm('Delete this expense?')">
+                            🗑️ Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+        <strong>Total Expenses: {{ gym_details.currency or '$' }}{{ pl_data.expenses }}</strong>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+        No expenses recorded for this month yet.
+    </p>
+    {% endif %}
+</div>
+
+{% endblock %}
