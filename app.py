@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash, jsonify
+from flask_compress import Compress
 from werkzeug.utils import secure_filename
 from gym_manager import GymManager
 from auth_manager import AuthManager
@@ -16,6 +17,9 @@ import base64
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-this-in-production'
+
+# Enable compression for all responses
+Compress(app)
 
 # Configuration
 UPLOAD_FOLDER = 'static/uploads'
@@ -367,7 +371,15 @@ def dashboard():
     # Count expiring memberships (next 3 days)
     expiring_count = 0
     today = datetime.now().date()
-    for member in gym.get_all_members().values():
+    all_members = gym.get_all_members()
+    
+    # Check if it's a dict or list
+    if isinstance(all_members, dict):
+        members_to_check = all_members.values()
+    else:
+        members_to_check = all_members
+    
+    for member in members_to_check:
         # Check if trial is expiring
         if member.get('trial_end'):
             trial_end = datetime.strptime(member['trial_end'], '%Y-%m-%d').date()

@@ -388,6 +388,150 @@
       "membership_type": "Gym",
       "is_trial": false,
       "trial_end_date": null
+    },
+    "37": {
+      "id": "37",
+      "name": "Sobhan Ahmed",
+      "phone": "3427735262",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-27",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "38": {
+      "id": "38",
+      "name": "Noman Ahmed",
+      "phone": "3183645216",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-27",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "39": {
+      "id": "39",
+      "name": "Waqas hussain",
+      "phone": "3102709156",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-27",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "40": {
+      "id": "40",
+      "name": "M SALMAN NAWAS",
+      "phone": "3072564638",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-27",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "41": {
+      "id": "41",
+      "name": "FAHIM SOOMRO",
+      "phone": "3128476689",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-07",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "42": {
+      "id": "42",
+      "name": "M Whaeeh",
+      "phone": "3038589018",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-28",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "43": {
+      "id": "43",
+      "name": "ABDUL-REHMAN",
+      "phone": "3328828823",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-08",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "44": {
+      "id": "44",
+      "name": "Izhan",
+      "phone": "3332979650",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-28",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "45": {
+      "id": "45",
+      "name": "Ahtisham",
+      "phone": "3410202803",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-28",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "46": {
+      "id": "46",
+      "name": "M Anwar",
+      "phone": "3012683878",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-29",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "47": {
+      "id": "47",
+      "name": "SAIMA ",
+      "phone": "3132512620",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-30",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "48": {
+      "id": "48",
+      "name": "Tayyab",
+      "phone": "3056042000",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-30",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
     }
   },
   "fees": {
@@ -909,9 +1053,216 @@
         "paid_date": "2025-11-26",
         "notes": "CASH"
       }
+    },
+    "37": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-27",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-27",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-27",
+        "notes": ""
+      }
+    },
+    "38": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-27",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-27",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-27",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-27",
+        "notes": "CASH"
+      }
+    },
+    "39": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-27",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-27",
+        "notes": "CASH"
+      }
+    },
+    "40": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-27",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-27",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-27",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-24",
+        "notes": "CASH"
+      }
+    },
+    "41": {
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-27",
+        "notes": "CASH"
+      }
+    },
+    "42": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-28",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-28",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-27",
+        "notes": "CASH"
+      }
+    },
+    "43": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-28",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-28",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-28",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-28",
+        "notes": "CASH"
+      }
+    },
+    "44": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-28",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-28",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-28",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-28",
+        "notes": "CASH"
+      }
+    },
+    "45": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-28",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-28",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-28",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-28",
+        "notes": "CASH"
+      }
+    },
+    "46": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-29",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-29",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-29",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 4000.0,
+        "paid_date": "2025-12-29",
+        "notes": "CASH"
+      }
+    },
+    "47": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-30",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-30",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-30",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-30",
+        "notes": "CASH"
+      }
     }
   },
-  "next_member_id": 37,
+  "next_member_id": 49,
   "gym_details": {
     "name": "Gym Manager",
     "logo": null,
@@ -920,7 +1271,8 @@
   "attendance": {
     "10": [
       "2025-12-15 22:28:43",
-      "2025-12-15 22:29:07"
+      "2025-12-15 22:29:07",
+      "2025-12-15 23:16:50"
     ]
   },
   "classes": {
