@@ -532,6 +532,54 @@
       "membership_type": "Gym",
       "is_trial": false,
       "trial_end_date": null
+    },
+    "49": {
+      "id": "49",
+      "name": "KASHIF JAKHRO",
+      "phone": "3122569926",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-30",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "50": {
+      "id": "50",
+      "name": "Mehar Ali JAKHRO",
+      "phone": "3171198546",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-30",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "51": {
+      "id": "51",
+      "name": "M.UNAIB",
+      "phone": "3208337901",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-28",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "52": {
+      "id": "52",
+      "name": "Zainab",
+      "phone": "3333528780",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Cardio",
+      "is_trial": false,
+      "trial_end_date": null
     }
   },
   "fees": {
@@ -1260,9 +1308,99 @@
         "paid_date": "2025-12-30",
         "notes": "CASH"
       }
+    },
+    "48": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-30",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-30",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-30",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-30",
+        "notes": "CASH"
+      }
+    },
+    "49": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-30",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-30",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-30",
+        "notes": "CASH"
+      }
+    },
+    "51": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-28",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-28",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-28",
+        "notes": "CASH"
+      }
+    },
+    "50": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-30",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-30",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-30",
+        "notes": "CASH"
+      }
+    },
+    "52": {
+      "2025-09": {
+        "amount": 2500.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 2500.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 2500.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
     }
   },
-  "next_member_id": 49,
+  "next_member_id": 54,
   "gym_details": {
     "name": "Gym Manager",
     "logo": null,
@@ -1272,7 +1410,9 @@
     "10": [
       "2025-12-15 22:28:43",
       "2025-12-15 22:29:07",
-      "2025-12-15 23:16:50"
+      "2025-12-15 23:16:50",
+      "2025-12-16 00:15:28",
+      "2025-12-16 00:19:50"
     ]
   },
   "classes": {

@@ -653,8 +653,15 @@ def scan_check(member_id):
             status = 'ACCESS DENIED - TRIAL EXPIRED'
     else:
         status = 'ACCESS DENIED - FEE PENDING'
+    
+    # Get attendance history
+    attendance_history = gym.get_attendance(member_id)
              
-    return render_template('scan_result.html', member=member, status=status, month=current_month)
+    return render_template('scan_result.html', 
+                         member=member, 
+                         status=status, 
+                         month=current_month,
+                         attendance_history=attendance_history)
 
 @app.route('/member/<member_id>', methods=['GET', 'POST'])
 def member_details(member_id):
