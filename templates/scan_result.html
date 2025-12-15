@@ -43,6 +43,25 @@
         <p style="color: var(--text-muted);">ID: {{ member.id }}</p>
         <p><strong>Phone:</strong> {{ member.phone }}</p>
 
+        <!-- Payment Status -->
+        <div
+            style="margin-top: 1.5rem; padding: 1rem; background: {% if is_paid %}linear-gradient(135deg, #2ecc71, #27ae60){% else %}linear-gradient(135deg, #e74c3c, #c0392b){% endif %}; border-radius: 8px; color: white;">
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.3rem;">{{ month }} Payment</div>
+            <div style="font-size: 1.3rem; font-weight: bold;">
+                {% if is_paid %}
+                ✅ PAID
+                {% else %}
+                ❌ NOT PAID
+                {% endif %}
+            </div>
+            {% if last_payment %}
+            <div
+                style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 0.5rem;">
+                Last Payment: {{ gym_details.currency or '$' }}{{ last_payment.amount }} on {{ last_payment.paid_date }}
+            </div>
+            {% endif %}
+        </div>
+
         <div style="margin-top: 2rem; display: grid; gap: 1rem;">
             {% if status == 'DENIED' %}
             <a href="{{ url_for('member_details', member_id=member.id) }}" class="btn btn-success"
@@ -63,29 +82,27 @@
     <!-- Attendance History -->
     {% if attendance_history %}
     <div class="card" style="margin-top: 2rem;">
-        <h3 style="margin-bottom: 1rem; color: var(--primary); font-size: 1.3rem;">📊 Recent Attendance</h3>
-        <div style="max-height: 300px; overflow-y: auto;">
+        <h3 style="margin-bottom: 1rem; color: var(--primary); font-size: 1.3rem;">📊 Recent Visits</h3>
+        <div style="max-height: 200px; overflow-y: auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Time</th>
-                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for visit in attendance_history[:10] %}
+                    {% for visit in attendance_history[:5] %}
                     <tr>
                         <td>{{ visit.split()[0] }}</td>
                         <td>{{ visit.split()[1] if visit.split()|length > 1 else 'N/A' }}</td>
-                        <td><span class="badge paid">✓ Checked In</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
-            Total Visits: {{ attendance_history|length }}
+        <div style="text-align: center; margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+            Total: {{ attendance_history|length }} visits
         </div>
     </div>
     {% endif %}

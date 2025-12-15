@@ -656,12 +656,19 @@ def scan_check(member_id):
     
     # Get attendance history
     attendance_history = gym.get_attendance(member_id)
+    
+    # Get payment details
+    payment_history = gym.get_payment_history(member_id)
+    last_payment = payment_history[0] if payment_history else None
              
     return render_template('scan_result.html', 
                          member=member, 
                          status=status, 
                          month=current_month,
-                         attendance_history=attendance_history)
+                         attendance_history=attendance_history,
+                         last_payment=last_payment,
+                         is_paid=is_paid,
+                         gym_details=gym.get_gym_details())
 
 @app.route('/member/<member_id>', methods=['GET', 'POST'])
 def member_details(member_id):
