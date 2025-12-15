@@ -280,6 +280,114 @@
       "membership_type": "Gym",
       "is_trial": false,
       "trial_end_date": null
+    },
+    "28": {
+      "id": "28",
+      "name": "AFSHA",
+      "phone": "3453271607",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-25",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "29": {
+      "id": "29",
+      "name": "SEHAR",
+      "phone": "3145929696",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-25",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "30": {
+      "id": "30",
+      "name": "JUNAID  BUKHARI ",
+      "phone": "3122355588",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-25",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "31": {
+      "id": "31",
+      "name": "Abdul Rehman",
+      "phone": "3030221254",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-25",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "32": {
+      "id": "32",
+      "name": "Nasreen",
+      "phone": "3232066505",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-26",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "33": {
+      "id": "33",
+      "name": "IZHAN",
+      "phone": "3282307635",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-26",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "34": {
+      "id": "34",
+      "name": "AHMED",
+      "phone": "3282665523",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-26",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "35": {
+      "id": "35",
+      "name": "Ahtisham asif",
+      "phone": "3272524770",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-26",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "36": {
+      "id": "36",
+      "name": "Qayyum-gull",
+      "phone": "3259221879",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-26",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
     }
   },
   "fees": {
@@ -663,12 +771,169 @@
         "paid_date": "2025-08-25",
         "notes": "CASH"
       }
+    },
+    "28": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-25",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-25",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-25",
+        "notes": "CASH"
+      }
+    },
+    "29": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-25",
+        "notes": "CASH"
+      }
+    },
+    "30": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-25",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      }
+    },
+    "31": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-25",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-25",
+        "notes": "CASH"
+      }
+    },
+    "32": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-26",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-26",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-25",
+        "notes": "CASH"
+      }
+    },
+    "33": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-26",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-26",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-26",
+        "notes": "CASH"
+      }
+    },
+    "34": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-26",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-26",
+        "notes": "CASH"
+      }
+    },
+    "35": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-26",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-26",
+        "notes": "CASH"
+      }
+    },
+    "36": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-26",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-26",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-26",
+        "notes": "CASH"
+      }
     }
   },
-  "next_member_id": 28,
+  "next_member_id": 37,
   "gym_details": {
     "name": "Gym Manager",
     "logo": null,
     "currency": "Rs"
+  },
+  "attendance": {
+    "10": [
+      "2025-12-15 22:28:43",
+      "2025-12-15 22:29:07"
+    ]
+  },
+  "classes": {
+    "1": {
+      "id": "1",
+      "name": "KHAN",
+      "day": "Monday",
+      "time": "22:32",
+      "instructor": "NASEEM",
+      "capacity": 20,
+      "attendees": [
+        "10"
+      ]
+    }
   }
 }
