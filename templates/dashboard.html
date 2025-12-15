@@ -3,6 +3,72 @@
 {% block title %}Dashboard - Gym Manager{% endblock %}
 
 {% block content %}
+<!-- Sliding Header Carousel -->
+<div
+    style="position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 2rem; height: 200px; background: linear-gradient(135deg, var(--primary), var(--secondary));">
+    <div class="carousel-slides" style="display: flex; transition: transform 0.5s ease-in-out; height: 100%;">
+        <!-- Slide 1 -->
+        <div class="carousel-slide"
+            style="min-width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; text-align: center;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: white;">🎉 Welcome to {{ gym_details.name }}!</h2>
+            <p style="font-size: 1.2rem; color: rgba(255,255,255,0.9);">Manage your gym with ease</p>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-slide"
+            style="min-width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; text-align: center;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: white;">📊 Track Progress</h2>
+            <p style="font-size: 1.2rem; color: rgba(255,255,255,0.9);">Monitor attendance & payments</p>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-slide"
+            style="min-width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; text-align: center;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: white;">💪 Grow Your Business</h2>
+            <p style="font-size: 1.2rem; color: rgba(255,255,255,0.9);">Streamline operations & boost revenue</p>
+        </div>
+    </div>
+
+    <!-- Carousel Dots -->
+    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px;">
+        <span class="carousel-dot" onclick="goToSlide(0)"
+            style="width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s;"></span>
+        <span class="carousel-dot" onclick="goToSlide(1)"
+            style="width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s;"></span>
+        <span class="carousel-dot" onclick="goToSlide(2)"
+            style="width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s;"></span>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelector('.carousel-slides');
+    const dots = document.querySelectorAll('.carousel-dot');
+    const totalSlides = 3;
+
+    function updateSlide() {
+        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        dots.forEach((dot, index) => {
+            dot.style.background = index === currentSlide ? 'white' : 'rgba(255,255,255,0.5)';
+        });
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSlide();
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateSlide();
+    }
+
+    // Auto-slide every 4 seconds
+    setInterval(nextSlide, 4000);
+    updateSlide();
+</script>
+
+<!-- Search Members -->
 <div
     style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
     <h1 style="font-size: 2.5rem; font-weight: 700;">Dashboard</h1>
@@ -21,12 +87,15 @@
         </select>
     </form>
 </div>
-<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
     <a href="{{ url_for('scanner') }}" class="btn btn-secondary"
-        style="background-color: #34495e; border-color: #34495e;">📷 Scan</a>
-    <a href="{{ url_for('download_excel') }}" class="btn btn-success">📊 Excel</a>
-</div>
-</div>
+        style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        📷 Scan QR Code
+    </a>
+    <a href="{{ url_for('download_excel') }}" class="btn btn-success"
+        style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        📊 Export to Excel
+    </a>
 </div>
 
 <script>

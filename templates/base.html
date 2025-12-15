@@ -112,31 +112,79 @@
         .btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.75rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            box-shadow: 0 4px 15px hsla(260, 80%, 60%, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px hsla(260, 80%, 60%, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px hsla(260, 80%, 60%, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
             background: linear-gradient(135deg, var(--secondary), hsl(200, 90%, 40%));
+            box-shadow: 0 4px 15px hsla(200, 90%, 55%, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px hsla(200, 90%, 55%, 0.5);
         }
 
         .btn-success {
             background: linear-gradient(135deg, var(--success), hsl(140, 70%, 40%));
+            box-shadow: 0 4px 15px hsla(140, 70%, 50%, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 25px hsla(140, 70%, 50%, 0.5);
         }
 
         .btn-danger {
             background: linear-gradient(135deg, var(--error), hsl(0, 80%, 45%));
+            box-shadow: 0 4px 15px hsla(0, 80%, 60%, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px hsla(0, 80%, 60%, 0.5);
+        }
+
+        /* Small Buttons */
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
         }
 
         /* Forms */
@@ -275,53 +323,79 @@
                 {% endif %}
                 {{ gym_details.name }}
             </div>
-            <div class="nav-links">
+
+            <div class="nav-links" style="gap: 1.5rem;">
+                <!-- Primary Navigation -->
                 <a href="{{ url_for('dashboard') }}">Dashboard</a>
                 <a href="{{ url_for('add_member') }}">Add Member</a>
                 <a href="{{ url_for('fees') }}">Fees</a>
-                <a href="{{ url_for('settings') }}">⚙️ Settings</a>
 
+                <!-- More Dropdown -->
+                <div style="position: relative;">
+                    <button onclick="toggleDropdown()"
+                        style="background: none; border: none; color: var(--text); font-weight: 500; cursor: pointer; padding: 0; font-size: 1rem; font-family: inherit;">
+                        More ▼
+                    </button>
+                    <div id="moreDropdown"
+                        style="display: none; position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; min-width: 180px; margin-top: 0.5rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000;">
+                        <a href="{{ url_for('schedule') }}"
+                            style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s;"
+                            onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
+                            onmouseout="this.style.background='transparent'">
+                            📅 Schedule
+                        </a>
+                        <a href="{{ url_for('reports') }}"
+                            style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; border-top: 1px solid var(--border);"
+                            onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
+                            onmouseout="this.style.background='transparent'">
+                            📊 Reports
+                        </a>
+                        <a href="{{ url_for('settings') }}"
+                            style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; border-top: 1px solid var(--border);"
+                            onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
+                            onmouseout="this.style.background='transparent'">
+                            ⚙️ Settings
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Plan Badge -->
                 {% if user_plan == 'free_lifetime' %}
-                <span class="badge" style="background: linear-gradient(135deg, gold, orange); color: black;">🏆
+                <span class="badge"
+                    style="background: linear-gradient(135deg, gold, orange); color: black; padding: 0.4rem 0.8rem;">🏆
                     Premium</span>
                 {% else %}
-                <a href="#"
-                    onclick="alert('Please pay your monthly subscription of $60 to continue using all features.')"
-                    style="text-decoration: none;">
-                    <span class="badge"
-                        style="background: hsla(0, 80%, 60%, 0.2); color: var(--error); border: 1px solid var(--error);">
-                        ⚠️ Standard: $60/mo (Due)
-                    </span>
-                </a>
+                <span class="badge"
+                    style="background: hsla(0, 80%, 60%, 0.2); color: var(--error); border: 1px solid var(--error); padding: 0.4rem 0.8rem; cursor: pointer;"
+                    onclick="alert('Please pay your monthly subscription of $60 to continue using all features.')">
+                    ⚠️ $60/mo
+                </span>
                 {% endif %}
 
-                <a href="#" onclick="shareApp()" style="text-decoration: none; margin-right: 1rem;">
-                    <span class="badge" style="background: var(--primary); color: white; cursor: pointer;">
-                        📤 Share App
-                    </span>
-                </a>
-
-                <script>
-                    function shareApp() {
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'Gym Manager Pro',
-                                text: 'Check out my gym management app!',
-                                url: window.location.href
-                            });
-                        } else {
-                            navigator.clipboard.writeText(window.location.href);
-                            alert('Link copied to clipboard! Send it to your mobile.');
-                        }
-                    }
-                </script>
-
+                <!-- Logout -->
                 <a href="{{ url_for('logout') }}" style="color: var(--error); font-weight: 600; text-decoration: none;">
                     Logout
                 </a>
             </div>
         </div>
     </nav>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('moreDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('moreDropdown');
+            const isClickInside = event.target.closest('button') || event.target.closest('#moreDropdown');
+
+            if (!isClickInside && dropdown) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
     {% endif %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}

@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash, jsonify
 from werkzeug.utils import secure_filename
 from gym_manager import GymManager
 from auth_manager import AuthManager
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -253,8 +253,76 @@ def google_login():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('Logged out successfully!', 'success')
-    return redirect(url_for('auth'))
+    flash('Logged out successfully', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/schedule', methods=['GET', 'POST'])
+def schedule():
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        day = request.form.get('day')
+        time = request.form.get('time')
+        instructor = request.form.get('instructor')
+        capacity = request.form.get('capacity')
+        
+        gym.add_class(name, day, time, instructor, capacity)
+        flash('Class added successfully!', 'success')
+        return redirect(url_for('schedule'))
+        
+    return render_template('schedule.html', classes=gym.get_classes(), members=gym.get_all_members())
+
+@app.route('/book_class/<class_id>', methods=['POST'])
+def book_class(class_id):
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    member_id = request.form.get('member_id')
+    if gym.book_class(member_id, class_id):
+        flash('Booking confirmed!', 'success')
+    else:
+        flash('Booking failed (Full or invalid)', 'error')
+        
+    return redirect(url_for('schedule'))
+
+@app.route('/reports')
+def reports():
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    # Calculate stats
+    total_members = len(gym.get_all_members())
+    
+    # Current month revenue
+    current_month = datetime.now().strftime('%Y-%m')
+    status = gym.get_payment_status(current_month)
+    monthly_revenue = sum(m.get('amount', 0) for m in status['paid'])
+    
+    # Total check-ins
+    total_checkins = 0
+    if 'attendance' in gym.data:
+        for visits in gym.data['attendance'].values():
+            total_checkins += len(visits)
+    
+    # Revenue trend (last 6 months)
+    revenue_months = []
+    revenue_data = []
+    for i in range(5, -1, -1):
+        month = (datetime.now().replace(day=1) - timedelta(days=30*i)).strftime('%Y-%m')
+        revenue_months.append(month)
+        month_status = gym.get_payment_status(month)
+        revenue_data.append(sum(m.get('amount', 0) for m in month_status['paid']))
+    
+    return render_template('reports.html',
+                         total_members=total_members,
+                         monthly_revenue=monthly_revenue,
+                         total_checkins=total_checkins,
+                         paid_count=len(status['paid']),
+                         unpaid_count=len(status['unpaid']),
+                         revenue_months=revenue_months,
+                         revenue_data=revenue_data)
 
 @app.route('/reset_admin')
 def reset_admin():
@@ -528,12 +596,20 @@ def scan_check(member_id):
         return redirect(url_for('scanner'))
         
     status = 'GRANTED' if is_paid else 'DENIED'
-    
+    status = ''
+    if is_paid:
+        status = 'ACCESS GRANTED'
+        # Log attendance automatically
+        gym.log_attendance(member_id)
     # Special check for trial
-    if not is_paid and member.get('is_trial'):
+    elif not is_paid and member.get('is_trial'):
         today = datetime.now().strftime('%Y-%m-%d')
         if member.get('trial_end_date') >= today:
              status = 'TRIAL'
+        else:
+            status = 'ACCESS DENIED - TRIAL EXPIRED'
+    else:
+        status = 'ACCESS DENIED - FEE PENDING'
              
     return render_template('scan_result.html', member=member, status=status, month=current_month)
 
@@ -546,6 +622,8 @@ def member_details(member_id):
     if not member:
         flash('Member not found!', 'error')
         return redirect(url_for('dashboard'))
+        
+    attendance_history = gym.get_attendance(member_id)
         
     if request.method == 'POST':
         month = request.form.get('month')
@@ -571,8 +649,11 @@ def member_details(member_id):
     
     return render_template('member_details.html', 
                          member=member, 
-                         history=history, 
-                         current_month=current_date.strftime('%Y-%m'),
+                         gym_details=gym.get_gym_details(), 
+                         history=gym.get_payment_history(member_id),
+                         attendance_history=attendance_history,
+                         current_month=datetime.now().strftime('%Y-%m'),
+                         today=datetime.now().strftime('%Y-%m-%d'),
                          available_months=available_months)
 
 @app.route('/member/<member_id>/delete_fee/<month>', methods=['POST'])

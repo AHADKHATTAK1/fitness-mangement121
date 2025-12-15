@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Gym Manager{% endblock %}
+
+{% block content %}
+<h1
+    style="font-size: 2.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 2rem;">
+    📊 Analytics & Reports
+</h1>
+
+<!-- Summary Cards -->
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">👥</div>
+        <h3 style="color: var(--text-muted); margin-bottom: 0.5rem;">Total Members</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary);">{{ total_members }}</div>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">💰</div>
+        <h3 style="color: var(--text-muted); margin-bottom: 0.5rem;">This Month Revenue</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: var(--success);">${{ monthly_revenue }}</div>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📈</div>
+        <h3 style="color: var(--text-muted); margin-bottom: 0.5rem;">Total Check-Ins</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: var(--secondary);">{{ total_checkins }}</div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Monthly Revenue Trend</h2>
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Member Status</h2>
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: {{ revenue_months | tojson }},
+        datasets: [{
+            label: 'Revenue ($)',
+            data: {{ revenue_data | tojson }},
+        borderColor: 'rgb(121, 40, 202)',
+        backgroundColor: 'rgba(121, 40, 202, 0.1)',
+        tension: 0.4,
+        fill: true
+            }]
+        },
+        options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: { color: '#f0f0f0' }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { color: '#999' },
+                grid: { color: 'rgba(255,255,255,0.1)' }
+            },
+            x: {
+                ticks: { color: '#999' },
+                grid: { color: 'rgba(255,255,255,0.1)' }
+            }
+        }
+    }
+    });
+
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Paid', 'Unpaid'],
+            datasets: [{
+                data: [{{ paid_count }}, {{ unpaid_count }}],
+        backgroundColor: [
+            'rgb(76, 175, 80)',
+            'rgb(244, 67, 54)'
+        ]
+    }]
+        },
+        options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: { color: '#f0f0f0' }
+            }
+        }
+    }
+    });
+</script>
+{% endblock %}

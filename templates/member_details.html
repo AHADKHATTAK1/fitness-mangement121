@@ -44,21 +44,31 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <div style="margin-top: 2rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
                     <a href="https://wa.me/{{ member.phone|replace(' ', '')|replace('-', '') }}?text=Hello {{ member.name }}"
-                        target="_blank" class="btn" style="background-color: #25D366; color: white;">💬 WhatsApp</a>
+                        target="_blank" class="btn btn-sm"
+                        style="background: linear-gradient(135deg, #25D366, #128C7E); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+                        💬 WhatsApp
+                    </a>
                     <a href="sms:{{ member.phone|replace(' ', '')|replace('-', '') }}?body=Hello {{ member.name }}"
-                        class="btn" style="background-color: #f39c12; color: white;">💬 SMS</a>
+                        class="btn btn-sm"
+                        style="background: linear-gradient(135deg, #f39c12, #d68910); box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);">
+                        💬 SMS
+                    </a>
                     {% if member.email %}
-                    <a href="mailto:{{ member.email }}" class="btn" style="background-color: #3498db; color: white;">✉️
-                        Email</a>
+                    <a href="mailto:{{ member.email }}" class="btn btn-sm"
+                        style="background: linear-gradient(135deg, #3498db, #2980b9); box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);">
+                        ✉️ Email
+                    </a>
                     {% endif %}
-                    <a href="{{ url_for('edit_member', member_id=member.id) }}" class="btn btn-secondary">✏️ Edit</a>
-                    <a href="{{ url_for('generate_card', member_id=member.id) }}" class="btn btn-secondary">📄 Card</a>
+                    <a href="{{ url_for('edit_member', member_id=member.id) }}" class="btn btn-secondary btn-sm">✏️
+                        Edit</a>
+                    <a href="{{ url_for('generate_card', member_id=member.id) }}" class="btn btn-secondary btn-sm">📄 ID
+                        Card</a>
                     <form method="POST" action="{{ url_for('delete_member', member_id=member.id) }}"
                         style="display: inline;"
                         onsubmit="return confirm('Are you sure you want to delete this member? This cannot be undone.');">
-                        <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
                     </form>
                 </div>
             </div>
@@ -141,7 +151,34 @@
             </tbody>
         </table>
         {% else %}
-        <p style="text-align: center; padding: 2rem; color: var(--text-muted);">No payment history found.</p>
+        <p style="color: var(--text-muted); text-align: center; padding: 1rem;">No payment history found.</p>
+        {% endif %}
+    </div>
+
+    <!-- Attendance History -->
+    <div class="card" style="margin-top: 2rem;">
+        <h2 style="margin-bottom: 1.5rem;">🕒 Attendance History</h2>
+        {% if attendance_history %}
+        <div style="max-height: 300px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in attendance_history %}
+                    <tr>
+                        <td>{{ visit }}</td>
+                        <td><span class="badge" style="background: var(--success); color: white;">Check-In</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); text-align: center; padding: 1rem;">No visits recorded yet.</p>
         {% endif %}
     </div>
 </div>

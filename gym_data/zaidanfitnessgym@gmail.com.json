@@ -220,6 +220,66 @@
       "joined_date": "2025-12-08",
       "is_trial": false,
       "trial_end_date": null
+    },
+    "23": {
+      "id": "23",
+      "name": "Muhammad",
+      "phone": "3022637415",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-22",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "24": {
+      "id": "24",
+      "name": "UMMAR",
+      "phone": "3102230623",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-21",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "25": {
+      "id": "25",
+      "name": "Kamal Yousuf",
+      "phone": "3362267164",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-22",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "26": {
+      "id": "26",
+      "name": "MOIZ JAMIL",
+      "phone": "3232657192",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-23",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "27": {
+      "id": "27",
+      "name": "ASMA",
+      "phone": "3471388054",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-25",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
     }
   },
   "fees": {
@@ -496,9 +556,116 @@
         "amount": 1000.0,
         "paid_date": "2025-12-13 20:56:27"
       }
+    },
+    "22": {
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-19",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-19",
+        "notes": "CASH"
+      }
+    },
+    "23": {
+      "2025-11": {
+        "amount": 200.0,
+        "paid_date": "2025-08-22",
+        "notes": "C"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      },
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      }
+    },
+    "24": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-21",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-21",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-21",
+        "notes": "CASH"
+      }
+    },
+    "25": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-22",
+        "notes": "CASH"
+      }
+    },
+    "26": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "20225-08-23",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-23",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-23",
+        "notes": "CASH"
+      }
+    },
+    "27": {
+      "2025-09": {
+        "amount": 1500.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1500.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1500.0,
+        "paid_date": "2025-08-25",
+        "notes": "CASH"
+      }
     }
   },
-  "next_member_id": 23,
+  "next_member_id": 28,
   "gym_details": {
     "name": "Gym Manager",
     "logo": null,

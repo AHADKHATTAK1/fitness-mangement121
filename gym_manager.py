@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 class GymManager:
@@ -177,7 +177,72 @@ class GymManager:
         if member_id not in self.data['fees']:
             return False
         return month in self.data['fees'][member_id]
+
+    def log_attendance(self, member_id: str) -> bool:
+        """Log a visit for the member"""
+        if member_id not in self.data['members']:
+            return False
+        
+        if 'attendance' not in self.data:
+            self.data['attendance'] = {}
+            
+        if member_id not in self.data['attendance']:
+            self.data['attendance'][member_id] = []
+            
+        # Add timestamp
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.data['attendance'][member_id].append(timestamp)
+        self.save_data()
+        return True
+
+    def get_attendance(self, member_id: str) -> List[str]:
+        """Get attendance history for a member"""
+        if 'attendance' not in self.data:
+            return []
+        # Return reversed list (newest first)
+        return self.data['attendance'].get(member_id, [])[::-1]
     
+    # --- Class Scheduling Methods ---
+    def add_class(self, name: str, day: str, time: str, instructor: str, capacity: int) -> str:
+        """Add a new fitness class"""
+        if 'classes' not in self.data:
+            self.data['classes'] = {}
+            
+        class_id = str(len(self.data['classes']) + 1)
+        self.data['classes'][class_id] = {
+            'id': class_id,
+            'name': name,
+            'day': day, # e.g., "Monday"
+            'time': time, # e.g., "17:00"
+            'instructor': instructor,
+            'capacity': int(capacity),
+            'attendees': []
+        }
+        self.save_data()
+        return class_id
+        
+    def book_class(self, member_id: str, class_id: str) -> bool:
+        """Book a member into a class"""
+        if 'classes' not in self.data or class_id not in self.data['classes']:
+            return False
+            
+        cls = self.data['classes'][class_id]
+        if member_id in cls['attendees']:
+            return True # Already booked
+            
+        if len(cls['attendees']) >= cls['capacity']:
+            return False # Full
+            
+        cls['attendees'].append(member_id)
+        self.save_data()
+        return True
+        
+    def get_classes(self) -> List[Dict]:
+        """Get all classes"""
+        if 'classes' not in self.data:
+            return []
+        return list(self.data['classes'].values())
+
     def get_payment_status(self, month: Optional[str] = None) -> Dict[str, List[Dict]]:
         """Get paid/unpaid members for a specific month"""
         if month is None:
@@ -208,6 +273,11 @@ class GymManager:
             history.append({
                 'month': month,
                 'amount': info['amount'],
-                'paid_date': info['paid_date']
+                'paid_date': info['paid_date'],
+                'notes': info.get('notes', '')
             })
         return sorted(history, key=lambda x: x['month'], reverse=True)
+    
+    def get_payment_history(self, member_id: str) -> List[Dict]:
+        """Alias for get_member_fee_history for compatibility"""
+        return self.get_member_fee_history(member_id)
