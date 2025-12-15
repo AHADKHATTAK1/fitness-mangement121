@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     <meta name="theme-color" content="#7928ca">
+
+    <!-- Offline Database -->
+    <script src="{{ url_for('static', filename='offline-db.js') }}" defer></script>
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
 
     <style>
@@ -431,22 +434,24 @@
         }, 5000);
     </script>
     <script>
-        // Service Worker Registration with Update Detection
+        // Service Worker Registration (Non-blocking updates)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}")
                     .then(registration => {
                         console.log('SW registered:', registration);
 
-                        // Check for updates
+                        // Check for updates (non-blocking)
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New version available
-                                    if (confirm('New version available! Reload to update?')) {
+                                    // Show non-blocking update notification
+                                    console.log('New version available');
+                                    // Auto-reload after 5 seconds
+                                    setTimeout(() => {
                                         window.location.reload();
-                                    }
+                                    }, 5000);
                                 }
                             });
                         });

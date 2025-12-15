@@ -1,7 +1,8 @@
-const CACHE_NAME = 'gym-manager-v2';
+const CACHE_NAME = 'gym-manager-v3';
 const urlsToCache = [
     '/',
     '/static/icon.png',
+    '/static/offline-db.js',
     '/dashboard',
     '/add_member',
     '/fees',
