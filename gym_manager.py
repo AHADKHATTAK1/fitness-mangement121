@@ -29,7 +29,8 @@ class GymManager:
             'next_member_id': 1,
             'gym_details': {
                 'name': 'Gym Manager',
-                'logo': None
+                'logo': None,
+                'currency': '$'
             }
         }
     
@@ -37,7 +38,11 @@ class GymManager:
         """Get gym name and logo"""
         # Ensure key exists for older data files
         if 'gym_details' not in self.data:
-            self.data['gym_details'] = {'name': 'Gym Manager', 'logo': None}
+            self.data['gym_details'] = {'name': 'Gym Manager', 'logo': None, 'currency': '$'}
+            self.save_data()
+        # Ensure currency exists
+        if 'currency' not in self.data['gym_details']:
+            self.data['gym_details']['currency'] = '$'
             self.save_data()
         return self.data['gym_details']
 

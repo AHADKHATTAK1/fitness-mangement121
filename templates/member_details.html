@@ -40,7 +40,8 @@
                     <div><strong>📱 Phone:</strong> {{ member.phone }}</div>
                     <div><strong>📅 Joined:</strong> {{ member.joined_date }}</div>
                     <div style="font-size: 1.1rem; color: var(--success); margin-top: 0.5rem;">
-                        <strong>💰 Total Paid:</strong> ${{ history|sum(attribute='amount') }}
+                        <strong>💰 Total Paid:</strong> {{ gym_details.currency or '$' }}{{
+                        history|sum(attribute='amount') }}
                     </div>
                 </div>
 
