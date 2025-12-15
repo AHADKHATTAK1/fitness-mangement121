@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-manager-v3';
+const CACHE_NAME = 'gym-manager-v4';
 const urlsToCache = [
     '/',
     '/static/icon.png',

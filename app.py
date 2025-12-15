@@ -346,26 +346,57 @@ def dashboard():
     
     # Generate range and format as (value, label) tuples (12 past + current + 24 future = 37)
     dates = pd.date_range(start=start_date, periods=37, freq='MS')
-    available_months = [{'value': d.strftime('%Y-%m'), 'label': d.strftime('%B %Y')} for d in dates][::-1]
-    
     # Check if month requested
     selected_month = request.args.get('month')
     if not selected_month:
-        selected_month = current_date.strftime('%Y-%m')
-        
-    status = gym.get_payment_status(selected_month)
+        current_month = request.args.get('month', datetime.now().strftime('%Y-%m'))
+    status = gym.get_payment_status(current_month)
     
-    # Calculate Stats
-    total_members = len(status['paid']) + len(status['unpaid'])
-    revenue_collected = sum(m.get('amount', 0) for m in status['paid'])
+    # Calculate revenue
+    revenue = sum(m.get('amount', 0) for m in status['paid'])
+    
+    # Calculate revenue change vs last month
+    last_month = (datetime.strptime(current_month, '%Y-%m') - timedelta(days=30)).strftime('%Y-%m')
+    last_status = gym.get_payment_status(last_month)
+    last_revenue = sum(m.get('amount', 0) for m in last_status['paid'])
+    
+    revenue_change = 0
+    if last_revenue > 0:
+        revenue_change = round(((revenue - last_revenue) / last_revenue) * 100, 1)
+    
+    # Count expiring memberships (next 3 days)
+    expiring_count = 0
+    today = datetime.now().date()
+    for member in gym.get_all_members().values():
+        # Check if trial is expiring
+        if member.get('trial_end'):
+            trial_end = datetime.strptime(member['trial_end'], '%Y-%m-%d').date()
+            days_until_expiry = (trial_end - today).days
+            if 0 <= days_until_expiry <= 3:
+                expiring_count += 1
+    
+    # Total members
+    total_members = len(gym.get_all_members())
+    
+    # Available months for selector
+    available_months = []
+    for i in range(12):
+        month_date = datetime.now() - timedelta(days=30*i)
+        available_months.append({
+            'value': month_date.strftime('%Y-%m'),
+            'label': month_date.strftime('%B %Y')
+        })
     
     return render_template('dashboard.html', 
                          paid=status['paid'], 
                          unpaid=status['unpaid'],
+                         revenue=revenue,
+                         revenue_change=revenue_change,
                          total_members=total_members,
-                         revenue=revenue_collected,
-                         current_month=selected_month,
-                         available_months=available_months)
+                         expiring_count=expiring_count,
+                         current_month=current_month,
+                         available_months=available_months,
+                         gym_details=gym.get_gym_details())
 
 @app.route('/add_member', methods=['GET', 'POST'])
 def add_member():

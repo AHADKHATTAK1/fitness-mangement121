@@ -496,40 +496,8 @@
             });
         });
 
-        // Offline/Online Indicator
-        function updateOnlineStatus() {
-            const isOnline = navigator.onLine;
-            let badge = document.getElementById('offline-badge');
-
-            if (!isOnline && !badge) {
-                badge = document.createElement('div');
-                badge.id = 'offline-badge';
-                badge.innerHTML = '📡 Offline Mode - Changes will sync when online';
-                badge.style.position = 'fixed';
-                badge.style.top = '0';
-                badge.style.left = '0';
-                badge.style.width = '100%';
-                badge.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
-                badge.style.color = 'white';
-                badge.style.textAlign = 'center';
-                badge.style.padding = '0.75rem';
-                badge.style.zIndex = '10000';
-                badge.style.fontWeight = 'bold';
-                badge.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-                document.body.appendChild(badge);
-            } else if (isOnline && badge) {
-                // Show "Back Online" message briefly
-                badge.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-                badge.innerHTML = '✅ Back Online - Syncing data...';
-                setTimeout(() => badge.remove(), 3000);
-            }
-        }
-
-        window.addEventListener('offline', updateOnlineStatus);
-        window.addEventListener('online', updateOnlineStatus);
-
-        // Check status on load
-        updateOnlineStatus();
+        // Offline/Online detection removed - no banner popup
+        // App works offline silently via Service Worker
     </script>
 </body>
 
