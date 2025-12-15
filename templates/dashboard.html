@@ -119,6 +119,65 @@
     </div>
 </div>
 
+<!-- Payment Reminder Widget -->
+{% if unpaid|length > 0 %}
+<div class="card" style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+            <h3 style="margin: 0; font-size: 1.3rem;">Payment Reminders</h3>
+            <p style="opacity: 0.9; margin: 0.5rem 0 0 0;">{{ unpaid|length }} members haven't paid for {{ current_month
+                }}</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn" onclick="sendBulkWhatsApp()"
+                style="background: #25D366; border: none; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">
+                📱 WhatsApp All
+            </button>
+            <button class="btn" onclick="sendBulkEmail()"
+                style="background: #EA4335; border: none; box-shadow: 0 4px 15px rgba(234, 67, 53, 0.3);">
+                ✉️ Email All
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function sendBulkWhatsApp() {
+        const unpaidMembers = {{ unpaid| tojson
+    }};
+    const currency = "{{ gym_details.currency or '$' }}";
+    const month = "{{ current_month }}";
+
+    unpaidMembers.forEach(member => {
+        const message = encodeURIComponent(
+            `Hi ${member.name}, this is a reminder that your gym fee for ${month} is pending. ` +
+            `Please pay at your earliest convenience. Thank you!`
+        );
+        const url = `https://wa.me/${member.phone.replace(/[^0-9]/g, '')}?text=${message}`;
+        window.open(url, '_blank');
+    });
+}
+
+    function sendBulkEmail() {
+        const unpaidMembers = {{ unpaid| tojson
+    }};
+    const month = "{{ current_month }}";
+
+    const emails = unpaidMembers.map(m => m.email).filter(e => e).join(',');
+    const subject = encodeURIComponent(`Payment Reminder - ${month}`);
+    const body = encodeURIComponent(
+        `Dear Member,\n\n` +
+        `This is a friendly reminder that your gym membership fee for ${month} is pending.\n\n` +
+        `Please make the payment at your earliest convenience.\n\n` +
+        `Thank you!`
+    );
+
+    window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
+}
+</script>
+{% endif %}
+
 <!-- Search Members -->
 <div
     style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">

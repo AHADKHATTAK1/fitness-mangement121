@@ -68,7 +68,7 @@
             {% for p in payments %}
             <tr>
                 <td>{{ p.date }}</td>
-                <td>${{ p.amount }}</td>
+                <td>{{ details.currency or '$' }}{{ p.amount }}</td>
                 <td>{{ p.method }}</td>
                 <td><span class="badge paid">{{ p.status }}</span></td>
                 <td>
