@@ -146,15 +146,14 @@
     function sendBulkWhatsApp() {
         const unpaidMembers = {{ unpaid| tojson
     }};
-    const currency = "{{ gym_details.currency or '$' }}";
     const month = "{{ current_month }}";
 
     unpaidMembers.forEach(member => {
         const message = encodeURIComponent(
-            `Hi ${member.name}, this is a reminder that your gym fee for ${month} is pending. ` +
-            `Please pay at your earliest convenience. Thank you!`
+            "Hi " + member.name + ", this is a reminder that your gym fee for " + month + " is pending. " +
+            "Please pay at your earliest convenience. Thank you!"
         );
-        const url = `https://wa.me/${member.phone.replace(/[^0-9]/g, '')}?text=${message}`;
+        const url = "https://wa.me/" + member.phone.replace(/[^0-9]/g, '') + "?text=" + message;
         window.open(url, '_blank');
     });
 }
@@ -165,15 +164,15 @@
     const month = "{{ current_month }}";
 
     const emails = unpaidMembers.map(m => m.email).filter(e => e).join(',');
-    const subject = encodeURIComponent(`Payment Reminder - ${month}`);
+    const subject = encodeURIComponent("Payment Reminder - " + month);
     const body = encodeURIComponent(
-        `Dear Member,\n\n` +
-        `This is a friendly reminder that your gym membership fee for ${month} is pending.\n\n` +
-        `Please make the payment at your earliest convenience.\n\n` +
-        `Thank you!`
+        "Dear Member,\n\n" +
+        "This is a friendly reminder that your gym membership fee for " + month + " is pending.\n\n" +
+        "Please make the payment at your earliest convenience.\n\n" +
+        "Thank you!"
     );
 
-    window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
+    window.location.href = "mailto:" + emails + "?subject=" + subject + "&body=" + body;
 }
 </script>
 {% endif %}
