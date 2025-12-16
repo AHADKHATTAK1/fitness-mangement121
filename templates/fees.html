@@ -1,80 +1,128 @@
 {% extends "base.html" %}
 
-{% block title %}Fees - Gym Manager{% endblock %}
+{% block title %}Fee Management - Gym Manager{% endblock %}
 
 {% block content %}
 <div style="text-align: center; margin-bottom: 2rem;">
     <h1
         style="font-size: 2.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;">
-        Fee Management
+        💳 Fee Management
     </h1>
     <p style="color: var(--text-muted);">Record and track member payments</p>
 </div>
 
+<!-- Summary Cards -->
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Total Collected -->
+    <div class="card" style="text-align: center; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💰</div>
+        <h3 style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">Total Collected (All Time)</h3>
+        <div style="font-size: 2.5rem; font-weight: bold;">{{ gym_details.currency or '$' }}{{ total_collected }}</div>
+    </div>
+
+    <!-- Current Month -->
+    <div class="card" style="text-align: center; background: linear-gradient(135deg, #3498db, #2980b9); color: white;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📅</div>
+        <h3 style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">{{ current_month }} Revenue</h3>
+        <div style="font-size: 2.5rem; font-weight: bold;">{{ gym_details.currency or '$' }}{{ current_month_total }}
+        </div>
+    </div>
+
+    <!-- Total Records -->
+    <div class="card" style="text-align: center; background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📜</div>
+        <h3 style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">Payment Records</h3>
+        <div style="font-size: 2.5rem; font-weight: bold;">{{ fee_records|length }}</div>
+    </div>
+</div>
+
+<!-- Record New Payment -->
 <div class="card"
-    style="max-width: 600px; margin: 0 auto; border: 1px solid hsla(260, 80%, 60%, 0.2); background: linear-gradient(145deg, hsla(230, 20%, 15%, 0.6), hsla(230, 20%, 10%, 0.9)); box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.2);">
+    style="margin-bottom: 2rem; border: 1px solid hsla(260, 80%, 60%, 0.2); background: linear-gradient(145deg, hsla(230, 20%, 15%, 0.6), hsla(230, 20%, 10%, 0.9)); box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.2);">
+    <h2 style="margin-bottom: 1.5rem;">➕ Record New Payment</h2>
     <form method="POST">
-        <div class="form-group">
-            <label for="member_id">Select Member *</label>
-            <select id="member_id" name="member_id" required
-                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
-                <option value="">-- Choose a member --</option>
-                {% for member in members %}
-                <option value="{{ member.id }}">{{ member.name }} (ID: {{ member.id }})</option>
-                {% endfor %}
-            </select>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="form-group">
+                <label for="member_id">Select Member *</label>
+                <select id="member_id" name="member_id" required
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                    <option value="">-- Choose a member --</option>
+                    {% for member in members %}
+                    <option value="{{ member.id }}">{{ member.name }} (ID: {{ member.id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="month">Month *</label>
+                <select id="month" name="month" required
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+                    {% for m in available_months %}
+                    <option value="{{ m.value }}" {% if m.value==current_month %}selected{% endif %}>{{ m.label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount *</label>
+                <input type="number" id="amount" name="amount" step="0.01" required placeholder="Enter fee amount"
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes (optional)</label>
+                <input type="text" id="notes" name="notes" placeholder="Payment notes"
+                    style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="month">Month *</label>
-            <select id="month" name="month" required
-                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
-                {% for m in available_months %}
-                <option value="{{ m.value }}" {% if m.value==current_month %}selected{% endif %}>{{ m.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="amount">Amount (optional)</label>
-            <input type="number" id="amount" name="amount" step="0.01" placeholder="Enter fee amount"
-                style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text);">
-        </div>
-
-        <button type="submit" class="btn btn-success" style="width: 100%;">
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 1rem;">
             💰 Record Payment
         </button>
     </form>
 </div>
 
-<div class="card" style="margin-top: 2rem;">
-    <h2 style="margin-bottom: 1.5rem;">All Members</h2>
-    {% if members %}
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Member Name</th>
-                <th>Month</th>
-                <th>Amount</th>
-                <th>Paid Date</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in fee_records %}
-            <tr>
-                <td>{{ record.member_name }}</td>
-                <td>{{ record.month }}</td>
-                <td>{{ gym_details.currency or '$' }}{{ record.amount }}</td>
-                <td>{{ record.paid_date }}</td>
-                <td>{{ record.notes or '-' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- Payment History -->
+<div class="card">
+    <h2 style="margin-bottom: 1.5rem;">📜 All Payment Records</h2>
+
+    {% if fee_records %}
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Month</th>
+                    <th>Amount</th>
+                    <th>Date Paid</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in fee_records %}
+                <tr>
+                    <td><a href="{{ url_for('member_details', member_id=record.member_id) }}"
+                            style="color: var(--primary); text-decoration: none;">{{ record.member_name }}</a></td>
+                    <td>{{ record.month }}</td>
+                    <td><strong>{{ gym_details.currency or '$' }}{{ record.amount }}</strong></td>
+                    <td>{{ record.paid_date }}</td>
+                    <td>{{ record.notes or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+        <strong>Total: {{ gym_details.currency or '$' }}{{ total_collected }}</strong>
+    </div>
     {% else %}
-    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No fee records yet.</p>
+    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+        No payment records yet. Start by recording a payment above!
+    </p>
     {% endif %}
 </div>
+
 {% endblock %}
