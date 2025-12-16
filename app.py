@@ -551,18 +551,13 @@ def fees():
     gym = get_gym()
     if not gym: return redirect(url_for('auth'))
     
-    # Generate months for dropdown (12 past + current + 24 future = 37)
-    current_date = datetime.now()
-    start_date = current_date.replace(day=1) - pd.DateOffset(months=12)
-    dates = pd.date_range(start=start_date, periods=37, freq='MS')
-    available_months = [{'value': d.strftime('%Y-%m'), 'label': d.strftime('%B %Y')} for d in dates][::-1]
-    
     if request.method == 'POST':
         member_id = request.form.get('member_id')
         month = request.form.get('month')
         amount = float(request.form.get('amount') or 0)
+        notes = request.form.get('notes', '')
         
-        if gym.pay_fee(member_id, month, amount):
+        if gym.pay_fee(member_id, month, amount, notes):
             member = gym.get_member(member_id)
             flash(f'Fee recorded for {member["name"]} for {month}', 'success')
         else:
@@ -570,9 +565,49 @@ def fees():
         
         return redirect(url_for('fees'))
     
-    members = gym.get_all_members()
+    # Get current month
     current_month = datetime.now().strftime('%Y-%m')
-    return render_template('fees.html', members=members, current_month=current_month, available_months=available_months)
+    
+    # Get all payment records across all members
+    all_members = gym.get_all_members()
+    fee_records = []
+    
+    for member in all_members:
+        member_id = member.get('id')
+        payment_history = gym.get_payment_history(member_id)
+        
+        for payment in payment_history:
+            fee_records.append({
+                'member_id': member_id,
+                'member_name': member.get('name', 'Unknown'),
+                'month': payment.get('month'),
+                'amount': payment.get('amount', 0),
+                'paid_date': payment.get('paid_date'),
+                'notes': payment.get('notes', '')
+            })
+    
+    # Sort by date descending
+    fee_records.sort(key=lambda x: x['paid_date'], reverse=True)
+    
+    # Calculate summary
+    total_collected = sum(r['amount'] for r in fee_records)
+    current_month_records = [r for r in fee_records if r['month'] == current_month]
+    current_month_total = sum(r['amount'] for r in current_month_records)
+    
+    # Generate months for dropdown
+    current_date = datetime.now()
+    start_date = current_date.replace(day=1) - pd.DateOffset(months=12)
+    dates = pd.date_range(start=start_date, periods=37, freq='MS')
+    available_months = [{'value': d.strftime('%Y-%m'), 'label': d.strftime('%B %Y')} for d in dates][::-1]
+    
+    return render_template('fees.html', 
+                         members=all_members,
+                         fee_records=fee_records,
+                         current_month=current_month,
+                         available_months=available_months,
+                         total_collected=total_collected,
+                         current_month_total=current_month_total,
+                         gym_details=gym.get_gym_details())
 
 @app.route('/download_excel')
 def download_excel():
