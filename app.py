@@ -258,7 +258,7 @@ def google_login():
 def logout():
     session.clear()
     flash('Logged out successfully', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('auth'))
 
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedule():
