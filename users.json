@@ -38,5 +38,12 @@
     "referral_code": "FREE",
     "plan": "free_lifetime",
     "subscription_expiry": "2099-12-31"
+  },
+  "alirazasiddiqui135@gmail.com": {
+    "password": "6c097f7301bfe245a3cb1e51079ea851fc949bb8537e5cdff9943007b7a42496",
+    "joined_at": "2025-12-16 09:23:43",
+    "referral_code": "",
+    "plan": "standard",
+    "subscription_expiry": null
   }
 }
