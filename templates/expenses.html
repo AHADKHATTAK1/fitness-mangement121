@@ -34,8 +34,13 @@
         </div>
 
         <!-- Net Profit -->
-        <div
-            style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, {% if pl_data.net_profit >= 0 %}#3498db, #2980b9{% else %}#95a5a6, #7f8c8d{% endif %}); border-radius: 12px; color: white;">
+        <div {% if pl_data.net_profit>= 0 %}
+            style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 12px; color: white;">
+            {% else %}
+            style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            border-radius: 12px; color: white;">
+            {% endif %}
             <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">
                 {% if pl_data.net_profit >= 0 %}📈 Net Profit{% else %}📉 Net Loss{% endif %}
             </div>

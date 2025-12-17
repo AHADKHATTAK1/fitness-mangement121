@@ -44,104 +44,110 @@
         <p><strong>Phone:</strong> {{ member.phone }}</p>
 
         <!-- Payment Status -->
+        {% if is_paid %}
         <div
-            style="margin-top: 1.5rem; padding: 1rem; background: {% if is_paid %}linear-gradient(135deg, #2ecc71, #27ae60){% else %}linear-gradient(135deg, #e74c3c, #c0392b){% endif %}; border-radius: 8px; color: white;">
-            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.3rem;">{{ month }} Payment</div>
-            <div style="font-size: 1.3rem; font-weight: bold;">
-                {% if is_paid %}
-                ✅ PAID
-                {% else %}
-                ❌ NOT PAID
+            style="margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #2ecc71, #27ae60); border-radius: 8px; color: white;">
+            {% else %}
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #e74c3c, #c0392b); border-radius: 8px; color: white;">
+                {% endif %}
+                <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.3rem;">{{ month }} Payment</div>
+                <div style="font-size: 1.3rem; font-weight: bold;">
+                    {% if is_paid %}
+                    ✅ PAID
+                    {% else %}
+                    ❌ NOT PAID
+                    {% endif %}
+                </div>
+                {% if last_payment %}
+                <div
+                    style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 0.5rem;">
+                    Last Payment: {{ gym_details.currency or '$' }}{{ last_payment.amount }} on {{
+                    last_payment.paid_date }}
+                </div>
                 {% endif %}
             </div>
-            {% if last_payment %}
-            <div
-                style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 0.5rem;">
-                Last Payment: {{ gym_details.currency or '$' }}{{ last_payment.amount }} on {{ last_payment.paid_date }}
+
+            <div style="margin-top: 2rem; display: grid; gap: 1rem;">
+                {% if status == 'DENIED' %}
+                <a href="{{ url_for('member_details', member_id=member.id) }}" class="btn btn-success"
+                    style="font-size: 1.2rem; padding: 1rem;">
+                    💰 Collect Payment
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('scanner') }}" class="btn btn-secondary">
+                    📷 Scan Next
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn">
+                    🏠 Dashboard
+                </a>
             </div>
-            {% endif %}
         </div>
 
-        <div style="margin-top: 2rem; display: grid; gap: 1rem;">
-            {% if status == 'DENIED' %}
-            <a href="{{ url_for('member_details', member_id=member.id) }}" class="btn btn-success"
-                style="font-size: 1.2rem; padding: 1rem;">
-                💰 Collect Payment
-            </a>
-            {% endif %}
-
-            <a href="{{ url_for('scanner') }}" class="btn btn-secondary">
-                📷 Scan Next
-            </a>
-            <a href="{{ url_for('dashboard') }}" class="btn">
-                🏠 Dashboard
-            </a>
+        <!-- Attendance History -->
+        {% if attendance_history %}
+        <div class="card" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary); font-size: 1.3rem;">📊 Recent Visits</h3>
+            <div style="max-height: 200px; overflow-y: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for visit in attendance_history[:5] %}
+                        <tr>
+                            <td>{{ visit.split()[0] }}</td>
+                            <td>{{ visit.split()[1] if visit.split()|length > 1 else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center; margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                Total: {{ attendance_history|length }} visits
+            </div>
         </div>
+        {% endif %}
     </div>
 
-    <!-- Attendance History -->
-    {% if attendance_history %}
-    <div class="card" style="margin-top: 2rem;">
-        <h3 style="margin-bottom: 1rem; color: var(--primary); font-size: 1.3rem;">📊 Recent Visits</h3>
-        <div style="max-height: 200px; overflow-y: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for visit in attendance_history[:5] %}
-                    <tr>
-                        <td>{{ visit.split()[0] }}</td>
-                        <td>{{ visit.split()[1] if visit.split()|length > 1 else 'N/A' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div style="text-align: center; margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
-            Total: {{ attendance_history|length }} visits
-        </div>
-    </div>
-    {% endif %}
-</div>
+    <style>
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
 
-<style>
-    @keyframes popIn {
-        0% {
-            transform: scale(0.8);
-            opacity: 0;
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
+        @keyframes shake {
 
-    @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
 
-        0%,
-        100% {
-            transform: translateX(0);
-        }
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
 
-        10%,
-        30%,
-        50%,
-        70%,
-        90% {
-            transform: translateX(-5px);
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
         }
-
-        20%,
-        40%,
-        60%,
-        80% {
-            transform: translateX(5px);
-        }
-    }
-</style>
-{% endblock %}
+    </style>
+    {% endblock %}

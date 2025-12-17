@@ -23,6 +23,43 @@ A modern, feature-rich web application for managing gym members, fees, and gener
 pip install -r requirements.txt
 ```
 
+3. **Configure Environment Variables:**
+
+   **IMPORTANT**: Create a `.env` file in the project root directory:
+   
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   ```
+   
+   Then edit `.env` and add your actual API keys:
+   
+   - **FLASK_SECRET_KEY**: Generate a random secret key
+     ```bash
+     python -c "import secrets; print(secrets.token_hex(32))"
+     ```
+   
+   - **STRIPE_PUBLIC_KEY & STRIPE_SECRET_KEY**: 
+     - Get from https://dashboard.stripe.com/apikeys
+     - Use test keys (pk_test_... and sk_test_...) for development
+   
+   - **GOOGLE_CLIENT_ID**: 
+     - Get from https://console.cloud.google.com/apis/credentials
+     - Create OAuth 2.0 Client ID for web application
+   
+   - **ADMIN_EMAILS**: 
+     - Comma-separated list of admin email addresses
+     - Example: `admin@gym.com,youremail@example.com`
+
+   **Example `.env` file:**
+   ```env
+   FLASK_SECRET_KEY=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+   STRIPE_PUBLIC_KEY=pk_test_your_actual_stripe_public_key
+   STRIPE_SECRET_KEY=sk_test_your_actual_stripe_secret_key
+   GOOGLE_CLIENT_ID=123456789-abc.apps.googleusercontent.com
+   ADMIN_EMAILS=admin@gym.com,youremail@example.com
+   ```
+
 ## 🏃 Running the Application
 
 1. **Start the server:**
@@ -91,9 +128,12 @@ tracker software/
 
 ## 🔒 Security Notes
 
-- **For Production**: Change `app.secret_key` in app.py
-- **Passwords**: Currently stored in plain text (use hashing for production)
-- **HTTPS**: Use HTTPS in production environment
+- ✅ **Environment Variables**: All sensitive data is now stored in `.env` file
+- ⚠️ **Never commit `.env`**: The `.env` file is gitignored and should NEVER be pushed to GitHub
+- 🔑 **API Keys**: Get your own Stripe and Google OAuth keys - don't use example keys in production
+- 🔐 **Secret Key**: Generate a strong random secret key for Flask sessions
+- 🔒 **HTTPS**: Always use HTTPS in production environment
+- 🛡️ **Passwords**: Consider implementing bcrypt hashing for production use
 
 ## 🛠️ Technologies Used
 

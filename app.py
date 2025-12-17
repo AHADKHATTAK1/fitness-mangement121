@@ -14,9 +14,13 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 import qrcode
 import base64
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this-in-production'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Enable compression for all responses
 Compress(app)
@@ -71,11 +75,14 @@ def index():
 
 import stripe
 
-# STRIPE CONFIGURATION (YOU MUST REPLACE THESE WITH YOUR KEYS)
-# Get them from https://dashboard.stripe.com/apikeys
-app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_TYooMQauvdEDq54NiTphI7jx' # Replace this!
-app.config['STRIPE_SECRET_KEY'] = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc' # Replace this!
+# STRIPE CONFIGURATION - Loaded from environment variables
+# Get your keys from https://dashboard.stripe.com/apikeys
+app.config['STRIPE_PUBLIC_KEY'] = os.getenv('STRIPE_PUBLIC_KEY', '')
+app.config['STRIPE_SECRET_KEY'] = os.getenv('STRIPE_SECRET_KEY', '')
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
+
+# GOOGLE OAUTH CONFIGURATION - Loaded from environment variables
+app.config['GOOGLE_CLIENT_ID'] = os.getenv('GOOGLE_CLIENT_ID', '')
 
 @app.before_request
 def check_subscription():
@@ -170,8 +177,8 @@ def manual_payment():
                 
     return render_template('payment_manual.html')
 
-# Admin Access Control
-ADMIN_EMAILS = ['admin@gym.com', 'mashalkhttak@gmail.com', 'test@admin.com']
+# Admin Access Control - Loaded from environment variables
+ADMIN_EMAILS = os.getenv('ADMIN_EMAILS', 'admin@gym.com').split(',')
 
 @app.route('/super_admin')
 def super_admin():
@@ -227,8 +234,11 @@ def auth():
 def google_login():
     token = request.form.get('credential')
     try:
-        # Specify the CLIENT_ID of the app that accesses the backend:
-        client_id = "540149972190-pmr5d61g3jpj9j6c7h0qi4vs3vu6i0lr.apps.googleusercontent.com"
+        # Specify the CLIENT_ID of the app that accesses the backend (from environment variables)
+        client_id = os.getenv('GOOGLE_CLIENT_ID', '')
+        if not client_id:
+            flash('Google Login not configured. Please contact administrator.', 'error')
+            return redirect(url_for('auth'))
         idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), client_id)
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
@@ -970,6 +980,89 @@ def generate_receipt(member_id, month):
     buffer.seek(0)
     
     return send_file(buffer, download_name=f'receipt_{member_id}_{month}.pdf', as_attachment=True, mimetype='application/pdf')
+
+@app.route('/bulk_import', methods=['GET', 'POST'])
+def bulk_import():
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    if request.method == 'POST':
+        if 'import_file' not in request.files:
+            flash('No file selected!', 'error')
+            return redirect(url_for('bulk_import'))
+        
+        file = request.files['import_file']
+        if file.filename == '':
+            flash('No file selected!', 'error')
+            return redirect(url_for('bulk_import'))
+        
+        # Validate file extension
+        if not (file.filename.endswith('.xlsx') or file.filename.endswith('.csv')):
+            flash('Invalid file format! Use .xlsx or .csv files only.', 'error')
+            return redirect(url_for('bulk_import'))
+        
+        # Save file temporarily
+        upload_folder = app.config['UPLOAD_FOLDER']
+        filename = secure_filename(f"import_{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}")
+        filepath = os.path.join(upload_folder, filename)
+        file.save(filepath)
+        
+        # Process import
+        success_count, error_count, errors = gym.bulk_import_members(filepath)
+        
+        # Delete temp file
+        os.remove(filepath)
+        
+        # Show results
+        if success_count > 0:
+            flash(f'✅ Successfully imported {success_count} members!', 'success')
+        if error_count > 0:
+            flash(f'⚠️ {error_count} errors occurred during import.', 'error')
+            for error in errors[:10]:  # Show max 10 errors
+                flash(error, 'error')
+        
+        return redirect(url_for('bulk_import'))
+    
+    return render_template('bulk_import.html')
+
+@app.route('/download_template')
+def download_template():
+    """Download sample Excel template for bulk import"""
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    # Create sample data
+    sample_data = {
+        'Name': ['John Doe', 'Jane Smith', 'Ahmed Ali'],
+        'Phone': ['03001234567', '03117654321', '03009876543'],
+        'Email': ['john@example.com', 'jane@example.com', 'ahmed@example.com'],
+        'Membership Type': ['Gym', 'Gym + Cardio', 'Gym'],
+        'Joined Date': ['2025-01-01', '2025-01-05', '2025-01-10']
+    }
+    
+    df = pd.DataFrame(sample_data)
+    
+    # Create Excel file
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Members')
+        
+        # Get workbook and worksheet
+        workbook = writer.book
+        worksheet = writer.sheets['Members']
+        
+        # Set column widths
+        worksheet.column_dimensions['A'].width = 20
+        worksheet.column_dimensions['B'].width = 15
+        worksheet.column_dimensions['C'].width = 25
+        worksheet.column_dimensions['D'].width = 20
+        worksheet.column_dimensions['E'].width = 15
+    
+    output.seek(0)
+    
+    filename = 'member_import_template.xlsx'
+    return send_file(output, download_name=filename, as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

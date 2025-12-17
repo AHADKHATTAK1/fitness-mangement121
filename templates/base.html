@@ -341,8 +341,26 @@
                     </button>
                     <div id="moreDropdown"
                         style="display: none; position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; min-width: 180px; margin-top: 0.5rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 1000;">
-                        <a href="{{ url_for('schedule') }}"
+                        <a href="{{ url_for('expenses') }}"
                             style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s;"
+                            onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
+                            onmouseout="this.style.background='transparent'">
+                            💸 Expenses
+                        </a>
+                        <a href="{{ url_for('scanner') }}"
+                            style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; border-top: 1px solid var(--border);"
+                            onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
+                            onmouseout="this.style.background='transparent'">
+                            📷 Scanner
+                        </a>
+                        <a href="{{ url_for('bulk_import') }}"
+                            style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; border-top: 1px solid var(--border);"
+                            onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
+                            onmouseout="this.style.background='transparent'">
+                            📥 Bulk Import
+                        </a>
+                        <a href="{{ url_for('schedule') }}"
+                            style="display: block; padding: 0.75rem 1rem; color: var(--text); text-decoration: none; transition: background 0.2s; border-top: 1px solid var(--border);"
                             onmouseover="this.style.background='hsla(260,80%,60%,0.1)'"
                             onmouseout="this.style.background='transparent'">
                             📅 Schedule

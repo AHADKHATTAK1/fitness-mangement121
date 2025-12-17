@@ -1,7 +1,8 @@
 import json
 import os
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+import pandas as pd
 
 class GymManager:
     def __init__(self, data_file):
@@ -348,3 +349,116 @@ class GymManager:
     def get_payment_history(self, member_id: str) -> List[Dict]:
         """Alias for get_member_fee_history for compatibility"""
         return self.get_member_fee_history(member_id)
+    
+    def bulk_import_members(self, file_path: str) -> Tuple[int, int, List[str]]:
+        """
+        Import members from Excel/CSV file
+        
+        Args:
+            file_path: Path to Excel (.xlsx) or CSV (.csv) file
+            
+        Returns:
+            Tuple of (success_count, error_count, error_messages)
+        """
+        success_count = 0
+        error_count = 0
+        errors = []
+        
+        try:
+            # Read file based on extension
+            if file_path.endswith('.xlsx'):
+                df = pd.read_excel(file_path)
+            elif file_path.endswith('.csv'):
+                df = pd.read_csv(file_path)
+            else:
+                return (0, 0, ['Invalid file format. Use .xlsx or .csv'])
+            
+            # Validate required columns
+            required_cols = ['Name', 'Phone']
+            missing_cols = [col for col in required_cols if col not in df.columns]
+            if missing_cols:
+                return (0, 0, [f'Missing required columns: {", ".join(missing_cols)}'])
+            
+            # Process each row
+            for index, row in df.iterrows():
+                row_num = index + 2  # Excel row number (header is row 1)
+                
+                try:
+                    # Get required fields
+                    name = str(row.get('Name', '')).strip()
+                    phone = str(row.get('Phone', '')).strip()
+                    
+                    # Validate required fields
+                    if not name or pd.isna(row.get('Name')):
+                        errors.append(f'Row {row_num}: Name is required')
+                        error_count += 1
+                        continue
+                    
+                    if not phone or pd.isna(row.get('Phone')):
+                        errors.append(f'Row {row_num}: Phone is required')
+                        error_count += 1
+                        continue
+                    
+                    # Get optional fields
+                    email = str(row.get('Email', '')).strip() if pd.notna(row.get('Email')) else ''
+                    membership_type = str(row.get('Membership Type', 'Gym')).strip()
+                    joined_date = row.get('Joined Date')
+                    
+                    # Parse joined date
+                    if pd.notna(joined_date):
+                        if isinstance(joined_date, str):
+                            try:
+                                joined_date = datetime.strptime(joined_date, '%Y-%m-%d').strftime('%Y-%m-%d')
+                            except:
+                                joined_date = datetime.now().strftime('%Y-%m-%d')
+                        elif isinstance(joined_date, pd.Timestamp):
+                            joined_date = joined_date.strftime('%Y-%m-%d')
+                        else:
+                            joined_date = datetime.now().strftime('%Y-%m-%d')
+                    else:
+                        joined_date = datetime.now().strftime('%Y-%m-%d')
+                    
+                    # Check if member exists by phone
+                    existing_member = None
+                    for mid, member in self.data['members'].items():
+                        if member.get('phone') == phone:
+                            existing_member = mid
+                            break
+                    
+                    if existing_member:
+                        # Update existing member
+                        self.update_member(
+                            existing_member,
+                            name=name,
+                            phone=phone,
+                            membership_type=membership_type,
+                            joined_date=joined_date,
+                            email=email
+                        )
+                        success_count += 1
+                    else:
+                        # Add new member
+                        self.add_member(
+                            name=name,
+                            phone=phone,
+                            email=email,
+                            membership_type=membership_type,
+                            joined_date=joined_date
+                        )
+                        success_count += 1
+                        
+                except Exception as e:
+                    errors.append(f'Row {row_num}: {str(e)}')
+                    error_count += 1
+            
+            return (success_count, error_count, errors)
+            
+        except Exception as e:
+            return (0, 0, [f'File processing error: {str(e)}'])
+    
+    def find_member_by_phone(self, phone: str) -> Optional[Dict]:
+        """Find a member by phone number"""
+        for member_id, member in self.data['members'].items():
+            if member.get('phone') == phone:
+                return member
+        return None

@@ -580,6 +580,282 @@
       "membership_type": "Cardio",
       "is_trial": false,
       "trial_end_date": null
+    },
+    "54": {
+      "id": "54",
+      "name": "Sabir ",
+      "phone": "3112240935",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-28",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "55": {
+      "id": "55",
+      "name": "M-anwar",
+      "phone": "3012683878",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-08-29",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "58": {
+      "id": "58",
+      "name": "Sundas",
+      "phone": "3212961947",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "59": {
+      "id": "59",
+      "name": "Javeria",
+      "phone": "3212472840",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "60": {
+      "id": "60",
+      "name": "Shahmeer Khan",
+      "phone": "3262373632",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "61": {
+      "id": "61",
+      "name": "HASSAAN ",
+      "phone": "3352773997",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "62": {
+      "id": "62",
+      "name": "Ali Mirza",
+      "phone": "3353071396",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "63": {
+      "id": "63",
+      "name": "Raveel",
+      "phone": "3351881390",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "64": {
+      "id": "64",
+      "name": "HAMAS",
+      "phone": "3053564751",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "65": {
+      "id": "65",
+      "name": "UZAIFA",
+      "phone": "3002833706",
+      "email": "",
+      "photo": null,
+      "joined_date": "12025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "66": {
+      "id": "66",
+      "name": "JHANZAIB",
+      "phone": "3482432049",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Personal Training",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "67": {
+      "id": "67",
+      "name": "BASHARAT",
+      "phone": "3132273697",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Personal Training",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "68": {
+      "id": "68",
+      "name": "HANNAN",
+      "phone": "3002972318",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "69": {
+      "id": "69",
+      "name": "AWAIS",
+      "phone": "3262951835",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "70": {
+      "id": "70",
+      "name": "ASIF",
+      "phone": "3122472805",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "71": {
+      "id": "71",
+      "name": "ABDUL MANAY",
+      "phone": "3243294135",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-01",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "72": {
+      "id": "72",
+      "name": "RAFIA",
+      "phone": "RAFIA",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "73": {
+      "id": "73",
+      "name": "SHASRYAR",
+      "phone": "3079450028",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-12-16",
+      "active": true,
+      "membership_type": "Cardio",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "74": {
+      "id": "74",
+      "name": "MUSHTAQ HANFII",
+      "phone": "3218622798",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "75": {
+      "id": "75",
+      "name": "Hamad Raza",
+      "phone": "3262923720",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "76": {
+      "id": "76",
+      "name": "Abdul Wahab",
+      "phone": "3142121730",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "77": {
+      "id": "77",
+      "name": "Zeeshan",
+      "phone": "3135414717",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Other",
+      "is_trial": false,
+      "trial_end_date": null
+    },
+    "78": {
+      "id": "78",
+      "name": "M Tanveer",
+      "phone": "3099048126",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
     }
   },
   "fees": {
@@ -1398,9 +1674,313 @@
         "paid_date": "2025-12-01",
         "notes": "CASH"
       }
+    },
+    "54": {
+      "2025-09": {
+        "amount": 1000.0,
+        "paid_date": "2025-08-28",
+        "notes": "CASH"
+      },
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-09-28",
+        "notes": "CASH"
+      }
+    },
+    "58": {
+      "2025-10": {
+        "amount": 2000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 2000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 2000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "59": {
+      "2025-10": {
+        "amount": 2000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 2000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 2000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "60": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      }
+    },
+    "61": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "62": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "63": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "64": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "65": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      }
+    },
+    "66": {
+      "2025-10": {
+        "amount": 5000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 5000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 5000.0,
+        "paid_date": "2025-12-01",
+        "notes": ""
+      }
+    },
+    "67": {
+      "2025-10": {
+        "amount": 5000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 5000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 5000.0,
+        "paid_date": "2025-12-01",
+        "notes": "CASH"
+      }
+    },
+    "68": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-16",
+        "notes": "CASH"
+      }
+    },
+    "69": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      }
+    },
+    "70": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-01",
+        "notes": "CASH"
+      }
+    },
+    "71": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-01",
+        "notes": "CASH"
+      }
+    },
+    "72": {
+      "2025-10": {
+        "amount": 2000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 2000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      }
+    },
+    "73": {
+      "2025-10": {
+        "amount": 2500.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 2500.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      }
+    },
+    "74": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      }
+    },
+    "75": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      }
+    },
+    "76": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-02",
+        "notes": "CASH"
+      }
+    },
+    "77": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      }
+    },
+    "78": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      },
+      "2025-12": {
+        "amount": 1000.0,
+        "paid_date": "2025-12-02",
+        "notes": "CASH"
+      }
     }
   },
-  "next_member_id": 54,
+  "next_member_id": 79,
   "gym_details": {
     "name": "ZAIDAN FITNESS RECORD",
     "logo": "logo_20251216003044_523245270_122108343662943325_1441277798185746400_n.jpg",

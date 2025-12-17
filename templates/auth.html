@@ -116,12 +116,19 @@
 
     <div style="text-align: center;">
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <div id="g_id_onload" data-client_id="540149972190-pmr5d61g3jpj9j6c7h0qi4vs3vu6i0lr.apps.googleusercontent.com"
+        {% if config.GOOGLE_CLIENT_ID %}
+        <div id="g_id_onload" data-client_id="{{ config.GOOGLE_CLIENT_ID }}"
             data-login_uri="{{ url_for('google_login', _external=True) }}" data-auto_prompt="true">
         </div>
         <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="continue_with"
             data-shape="rectangular" data-logo_alignment="center" data-width="300">
         </div>
+        {% else %}
+        <div
+            style="padding: 1rem; background: hsla(0, 80%, 60%, 0.1); border: 1px solid var(--error); border-radius: 8px; color: var(--error);">
+            ⚠️ Google Login not configured. Please set GOOGLE_CLIENT_ID in .env file.
+        </div>
+        {% endif %}
         <p id="login-helper-text" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
             Instantly <span style="color: var(--primary); cursor: pointer; text-decoration: underline;"
                 onclick="handleGoogleLogin()">Login</span> or <span
