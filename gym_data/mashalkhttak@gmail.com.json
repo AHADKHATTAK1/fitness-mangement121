@@ -24,6 +24,7 @@
   "next_member_id": 2,
   "gym_details": {
     "name": "Gym Manager",
-    "logo": null
+    "logo": null,
+    "currency": "$"
   }
 }

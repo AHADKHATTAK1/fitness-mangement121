@@ -15,6 +15,7 @@ from google.auth.transport import requests as google_requests
 import qrcode
 import base64
 from dotenv import load_dotenv
+from google_wallet import GymWalletPass
 
 # Load environment variables from .env file
 load_dotenv()
@@ -267,8 +268,93 @@ def google_login():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('Logged out successfully', 'success')
+    flash('Logged out successfully!', 'success')
     return redirect(url_for('auth'))
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    """Request password reset code"""
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        
+        if not email:
+            flash('Please enter your email address.', 'error')
+            return redirect(url_for('forgot_password'))
+        
+        # Check if user exists
+        if not auth_manager.user_exists(email):
+            flash('No account found with that email.', 'error')
+            return redirect(url_for('forgot_password'))
+        
+        # Generate reset code
+        reset_code = auth_manager.generate_reset_code(email)
+        
+        if reset_code:
+            # Try to send email
+            from email_utils import EmailSender
+            email_sender = EmailSender()
+            
+            if email_sender.is_configured():
+                email_sender.send_reset_code(email, reset_code, email)
+                flash(f'Reset code sent to {email}! Check your email.', 'success')
+            else:
+                # Email not configured - show code on screen (dev mode)
+                flash(f'⚠️ Email not configured. Your reset code is: {reset_code}', 'warning')
+            
+            # Redirect to reset page
+            return redirect(url_for('reset_password', email=email))
+        else:
+            flash('Error generating reset code. Please try again.', 'error')
+    
+    return render_template('forgot_password.html')
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    """Verify code and reset password"""
+    email = request.args.get('email') or request.form.get('email')
+    
+    if not email:
+        flash('Invalid reset link.', 'error')
+        return redirect(url_for('forgot_password'))
+    
+    if request.method == 'POST':
+        code = request.form.get('code', '').strip()
+        new_password = request.form.get('new_password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
+        
+        # Validate inputs
+        if not code or not new_password or not confirm_password:
+            flash('Please fill all fields.', 'error')
+            return render_template('reset_password.html', email=email)
+        
+        if new_password != confirm_password:
+            flash('Passwords do not match!', 'error')
+            return render_template('reset_password.html', email=email)
+        
+        if len(new_password) < 6:
+            flash('Password must be at least 6 characters.', 'error')
+            return render_template('reset_password.html', email=email)
+        
+        # Verify code
+        if auth_manager.verify_reset_code(email, code):
+            # Reset password
+            if auth_manager.reset_password(email, new_password):
+                # Send confirmation email
+                from email_utils import EmailSender
+                email_sender = EmailSender()
+                if email_sender.is_configured():
+                    email_sender.send_password_changed_notification(email, email)
+                
+                flash('✅ Password reset successful! Please login with your new password.', 'success')
+                return redirect(url_for('auth'))
+            else:
+                flash('Error resetting password. Please try again.', 'error')
+        else:
+            flash('❌ Invalid or expired code. Please request a new one.', 'error')
+            return redirect(url_for('forgot_password'))
+    
+    return render_template('reset_password.html', email=email)
+
 
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedule():
@@ -1062,6 +1148,54 @@ def download_template():
     
     filename = 'member_import_template.xlsx'
     return send_file(output, download_name=filename, as_attachment=True)
+
+@app.route('/member/<member_id>/wallet_pass')
+def generate_wallet_pass(member_id):
+    """Generate Google Wallet pass for member"""
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    member = gym.get_member(member_id)
+    if not member:
+        flash('Member not found!', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Initialize wallet pass generator
+    wallet = GymWalletPass()
+    
+    if not wallet.is_configured():
+        flash('⚠️ Google Wallet not configured. Contact admin to set up.', 'error')
+        return redirect(url_for('member_details', member_id=member_id))
+    
+    # Get gym details
+    gym_details = gym.get_gym_details()
+    
+    # Create or update the loyalty class (one per gym)
+    class_id = wallet.create_class(
+        gym_name=gym_details['name'],
+        gym_logo_url=None  # Can add logo URL later
+    )
+    
+    if not class_id:
+        flash('❌ Failed to create wallet class. Check credentials.', 'error')
+        return redirect(url_for('member_details', member_id=member_id))
+    
+    # Generate the "Add to Google Wallet" URL
+    save_url = wallet.create_jwt_save_url(
+        member_id=member_id,
+        member_name=member['name'],
+        member_phone=member['phone'],
+        gym_name=gym_details['name']
+    )
+    
+    if save_url:
+        # Redirect to Google Wallet
+        return redirect(save_url)
+    else:
+        flash('❌ Failed to generate wallet pass. Check configuration.', 'error')
+        return redirect(url_for('member_details', member_id=member_id))
+
+
 
 
 if __name__ == '__main__':

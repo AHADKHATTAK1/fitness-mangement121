@@ -1,6 +1,6 @@
 {
   "mashalkhttak@gmail.com": {
-    "password": "054e3b308708370ea029dc2ebd1646c498d59d7203c9e1a44cf0484df98e581a",
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
     "joined_at": "2025-12-13 00:59:00",
     "referral_code": "MIGRATED",
     "plan": "free"
@@ -56,6 +56,13 @@
   "9090": {
     "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
     "joined_at": "2025-12-16 12:24:07",
+    "referral_code": "",
+    "plan": "standard",
+    "subscription_expiry": null
+  },
+  "vvvvvv": {
+    "password": "3ea87a56da3844b420ec2925ae922bc731ec16a4fc44dcbeafdad49b0e61d39c",
+    "joined_at": "2025-12-17 18:37:26",
     "referral_code": "",
     "plan": "standard",
     "subscription_expiry": null

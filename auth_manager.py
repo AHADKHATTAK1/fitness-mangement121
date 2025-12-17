@@ -142,3 +142,55 @@ class AuthManager:
         # Sanitize username to be safe filename
         safe_name = "".join([c for c in username if c.isalpha() or c.isdigit() or c in ('@', '.', '_')]).strip()
         return f"gym_data/{safe_name}.json"
+    
+    # Password Reset Methods
+    def generate_reset_code(self, username):
+        """Generate 6-digit reset code with 15-min expiry"""
+        if username not in self.users:
+            return None
+        
+        import random
+        reset_code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        expiry_time = (datetime.now() + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+        
+        self.users[username]['reset_code'] = reset_code
+        self.users[username]['reset_code_expiry'] = expiry_time
+        self.save_users()
+        
+        return reset_code
+    
+    def verify_reset_code(self, username, code):
+        """Verify if reset code is valid and not expired"""
+        if username not in self.users:
+            return False
+        
+        user = self.users[username]
+        if 'reset_code' not in user or 'reset_code_expiry' not in user:
+            return False
+        
+        if user['reset_code'] != code:
+            return False
+        
+        expiry = datetime.strptime(user['reset_code_expiry'], '%Y-%m-%d %H:%M:%S')
+        if datetime.now() > expiry:
+            del user['reset_code']
+            del user['reset_code_expiry']
+            self.save_users()
+            return False
+        
+        return True
+    
+    def reset_password(self, username, new_password):
+        """Reset password after code verification"""
+        if username not in self.users:
+            return False
+        
+        self.users[username]['password'] = self.hash_password(new_password)
+        
+        if 'reset_code' in self.users[username]:
+            del self.users[username]['reset_code']
+        if 'reset_code_expiry' in self.users[username]:
+            del self.users[username]['reset_code_expiry']
+        
+        self.save_users()
+        return True

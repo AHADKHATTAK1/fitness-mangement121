@@ -13,3 +13,5 @@ qrcode[pil]==7.4.2
 Werkzeug==3.0.1
 python-dotenv==1.0.0
 Flask-Compress==1.14
+google-auth==2.26.2
+google-api-python-client==2.114.0

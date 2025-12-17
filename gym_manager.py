@@ -246,8 +246,8 @@ class GymManager:
             return False
         return month in self.data['fees'][member_id]
 
-    def log_attendance(self, member_id: str) -> bool:
-        """Log a visit for the member"""
+    def log_attendance(self, member_id: str, emotion: str = None, confidence: float = None) -> bool:
+        """Log a visit for the member with optional emotion data"""
         if member_id not in self.data['members']:
             return False
         
@@ -257,18 +257,25 @@ class GymManager:
         if member_id not in self.data['attendance']:
             self.data['attendance'][member_id] = []
             
-        # Add timestamp
+        # Add timestamp with emotion data
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.data['attendance'][member_id].append(timestamp)
+        attendance_record = {
+            'timestamp': timestamp,
+            'emotion': emotion,
+            'confidence': confidence
+        }
+        
+        self.data['attendance'][member_id].append(attendance_record)
         self.save_data()
         return True
 
-    def get_attendance(self, member_id: str) -> List[str]:
+    def get_attendance(self, member_id: str) -> List:
         """Get attendance history for a member"""
         if 'attendance' not in self.data:
             return []
-        # Return reversed list (newest first)
-        return self.data['attendance'].get(member_id, [])[::-1]
+        attendance = self.data['attendance'].get(member_id, [])
+        # Reverse for newest first
+        return attendance[::-1]
     
     # --- Class Scheduling Methods ---
     def add_class(self, name: str, day: str, time: str, instructor: str, capacity: int) -> str:

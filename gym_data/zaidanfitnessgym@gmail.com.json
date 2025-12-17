@@ -856,6 +856,18 @@
       "membership_type": "Gym",
       "is_trial": false,
       "trial_end_date": null
+    },
+    "79": {
+      "id": "79",
+      "name": "Ahsan",
+      "phone": "3221261491",
+      "email": "",
+      "photo": null,
+      "joined_date": "2025-09-02",
+      "active": true,
+      "membership_type": "Gym",
+      "is_trial": false,
+      "trial_end_date": null
     }
   },
   "fees": {
@@ -1978,9 +1990,21 @@
         "paid_date": "2025-12-02",
         "notes": "CASH"
       }
+    },
+    "79": {
+      "2025-10": {
+        "amount": 1000.0,
+        "paid_date": "2025-10-02",
+        "notes": "CASH"
+      },
+      "2025-11": {
+        "amount": 1000.0,
+        "paid_date": "2025-11-02",
+        "notes": "CASH"
+      }
     }
   },
-  "next_member_id": 79,
+  "next_member_id": 80,
   "gym_details": {
     "name": "ZAIDAN FITNESS RECORD",
     "logo": "logo_20251216003044_523245270_122108343662943325_1441277798185746400_n.jpg",
