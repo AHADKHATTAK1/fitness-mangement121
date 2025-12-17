@@ -998,6 +998,44 @@ def settings():
         else:
             flash('Failed to update settings!', 'error')
         return redirect(url_for('settings'))
+
+@app.route('/restore_backup', methods=['POST'])
+def restore_backup():
+    gym = get_gym()
+    if not gym: return redirect(url_for('auth'))
+    
+    if 'backup_file' not in request.files:
+        flash('No file selected!', 'error')
+        return redirect(url_for('settings'))
+        
+    file = request.files['backup_file']
+    if file.filename == '':
+        flash('No file selected!', 'error')
+        return redirect(url_for('settings'))
+        
+    if file and file.filename.endswith('.json'):
+        try:
+            # Read and validate JSON
+            data = json.load(file)
+            
+            # Simple validation check (must have 'members' key)
+            if 'members' not in data:
+                flash('Invalid backup file! Missing member data.', 'error')
+                return redirect(url_for('settings'))
+            
+            # Save to current gym's data file
+            with open(gym.data_file, 'w') as f:
+                json.dump(data, f, indent=2)
+                
+            flash('✅ Data restored successfully! Please log in again.', 'success')
+            return redirect(url_for('logout'))
+            
+        except Exception as e:
+            flash(f'Error restoring data: {str(e)}', 'error')
+    else:
+        flash('Invalid file type! Please upload a JSON file.', 'error')
+        
+    return redirect(url_for('settings'))
             
     payments = []
     if 'logged_in' in session:

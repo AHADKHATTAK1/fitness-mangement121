@@ -51,6 +51,30 @@
     </form>
 </div>
 
+<div class="card" style="max-width: 600px; margin: 2rem auto; border-left: 4px solid var(--warning);">
+    <h2 style="margin-bottom: 1rem;">🔄 Restore Data (Backup)</h2>
+    <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        Upload your gym data file (<code>.json</code>) to restore all members, fees, and history.
+        <br><strong>⚠️ Warning:</strong> This will replace all current data!
+    </p>
+
+    <form action="{{ url_for('restore_backup') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="backup_file" class="btn btn-secondary" style="cursor: pointer; display: inline-block;">
+                📂 Select Backup File
+            </label>
+            <input type="file" id="backup_file" name="backup_file" accept=".json" required style="display: none;"
+                onchange="document.getElementById('backup-name').textContent = this.files[0].name">
+            <span id="backup-name" style="margin-left: 1rem; color: var(--text-muted);"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning" style="width: 100%; margin-top: 1rem;"
+            onclick="return confirm('⚠️ Are you sure? This will OVERWRITE all current data permanently!')">
+            🔄 Restore Data Now
+        </button>
+    </form>
+</div>
+
 <div class="card" style="max-width: 800px; margin: 2rem auto;">
     <h2 style="margin-bottom: 1.5rem; color: var(--primary);">🧾 Subscription / Billing History</h2>
     {% if payments %}
