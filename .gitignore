@@ -30,6 +30,11 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 
+# User Data (NEVER COMMIT!)
+users.json
+gym_data.json
+gym_data/
+
 # Uploads (may contain user data)
 static/uploads/*
 !static/uploads/.gitkeep
