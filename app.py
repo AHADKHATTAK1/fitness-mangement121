@@ -999,6 +999,13 @@ def settings():
             flash('Failed to update settings!', 'error')
         return redirect(url_for('settings'))
 
+    payments = []
+    if 'logged_in' in session:
+        user = auth_manager.users.get(session['username'], {})
+        payments = user.get('payments', [])
+        
+    return render_template('settings.html', details=gym.get_gym_details(), payments=payments)
+
 @app.route('/restore_backup', methods=['POST'])
 def restore_backup():
     gym = get_gym()
@@ -1036,13 +1043,6 @@ def restore_backup():
         flash('Invalid file type! Please upload a JSON file.', 'error')
         
     return redirect(url_for('settings'))
-            
-    payments = []
-    if 'logged_in' in session:
-        user = auth_manager.users.get(session['username'], {})
-        payments = user.get('payments', [])
-        
-    return render_template('settings.html', details=gym.get_gym_details(), payments=payments)
 
 @app.route('/receipt/<member_id>/<month>')
 def generate_receipt(member_id, month):
