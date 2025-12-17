@@ -1,16 +1,19 @@
+# Minimal dependencies for cloud deployment
 Flask==3.0.0
 gunicorn==21.2.0
-pandas>=2.2.0
-openpyxl==3.1.2
-reportlab==4.0.9
-stripe==7.13.0
-requests==2.31.0
-google-auth==2.26.2
-google-auth-oauthlib==1.2.0
-google-auth-httplib2==0.2.0
-Pillow==10.2.0
-qrcode[pil]==7.4.2
 Werkzeug==3.0.1
 python-dotenv==1.0.0
-Flask-Compress==1.14
+Pillow==10.2.0
+qrcode[pil]==7.4.2
+reportlab==4.0.9
+requests==2.31.0
+stripe==7.13.0
+
+# Google APIs
+google-auth==2.26.2
+google-auth-oauthlib==1.2.0
 google-api-python-client==2.114.0
+
+# Only if bulk import needed (optional - comment out for faster deploy)
+# pandas>=2.2.0
+# openpyxl==3.1.2
