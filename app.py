@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from gym_manager import GymManager
 from auth_manager import AuthManager
 import os
+import json
 from datetime import datetime, timedelta
 import pandas as pd
 from reportlab.lib.pagesizes import letter
