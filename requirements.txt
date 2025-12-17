@@ -1,6 +1,6 @@
 Flask==3.0.0
 gunicorn==21.2.0
-pandas==2.1.4
+pandas>=2.2.0
 openpyxl==3.1.2
 reportlab==4.0.9
 stripe==7.13.0
@@ -13,5 +13,4 @@ qrcode[pil]==7.4.2
 Werkzeug==3.0.1
 python-dotenv==1.0.0
 Flask-Compress==1.14
-google-auth==2.26.2
 google-api-python-client==2.114.0
