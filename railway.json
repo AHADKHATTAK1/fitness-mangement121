@@ -6,9 +6,6 @@
     "deploy": {
         "startCommand": "gunicorn app:app --bind 0.0.0.0:$PORT",
         "restartPolicyType": "ON_FAILURE",
-        "restartPolicyMaxRetries": 10,
-        "environmentVariables": {
-            "DATABASE_URL": "${{ Postgres.DATABASE_URL }}"
-        }
+        "restartPolicyMaxRetries": 10
     }
 }
