@@ -45,8 +45,7 @@ def get_gym():
     if 'logged_in' not in session:
         return None
     username = session.get('username')
-    data_file = auth_manager.get_user_data_file(username)
-    return GymManager(data_file)
+    return GymManager(username)  # Now uses email directly
 
 @app.context_processor
 def inject_gym_details():

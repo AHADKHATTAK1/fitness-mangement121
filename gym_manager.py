@@ -1,471 +1,462 @@
-import json
-import os
+"""
+Database-backed Gym Manager
+Uses PostgreSQL via SQLAlchemy instead of JSON files
+"""
+
+from models import User, Gym, Member, Fee, Attendance, Expense, get_session
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
-import pandas as pd
+from sqlalchemy import func, extract
+from sqlalchemy.exc import IntegrityError
 
 class GymManager:
-    def __init__(self, data_file):
-        """Initialize with a specific user's data file"""
-        self.data_file = data_file
-        self.data = self.load_data()
-    
-    def load_data(self) -> Dict:
-        """Load data from JSON file or create new structure"""
-        if os.path.exists(self.data_file):
-            try:
-                with open(self.data_file, 'r') as f:
-                    return json.load(f)
-            except json.JSONDecodeError:
-                return self._create_empty_data()
-        return self._create_empty_data()
-    
-    def _create_empty_data(self) -> Dict:
-        """Create empty data structure"""
-        return {
-            # 'admin' key is no longer used for auth, but kept structure if needed or ignored
-            'admin': None, 
-            'members': {},
-            'fees': {},
-            'expenses': {},  # NEW: Track gym expenses
-            'next_member_id': 1,
-            'gym_details': {
-                'name': 'Gym Manager',
-                'logo': None,
-                'currency': '$'
-            }
-        }
+    def __init__(self, user_email):
+        """Initialize with user's email"""
+        self.user_email = user_email
+        self.session = get_session()
+        
+        # Get or create user's gym
+        user = self.session.query(User).filter_by(email=user_email).first()
+        if user:
+            self.gym = self.session.query(Gym).filter_by(user_id=user.id).first()
+            if not self.gym:
+                # Create default gym for user
+                self.gym = Gym(
+                    user_id=user.id,
+                    name='Gym Manager',
+                    currency='Rs'
+                )
+                self.session.add(self.gym)
+                self.session.commit()
+        else:
+            self.gym = None
     
     def get_gym_details(self) -> Dict:
-        """Get gym name and logo"""
-        # Ensure key exists for older data files
-        if 'gym_details' not in self.data:
-            self.data['gym_details'] = {'name': 'Gym Manager', 'logo': None, 'currency': '$'}
-            self.save_data()
-        # Ensure currency exists
-        if 'currency' not in self.data['gym_details']:
-            self.data['gym_details']['currency'] = '$'
-            self.save_data()
-        return self.data['gym_details']
-
-    def update_gym_details(self, name: str, logo_path: Optional[str] = None, currency: str = '$') -> bool:
-        """Update gym name, logo, and currency"""
-        if 'gym_details' not in self.data:
-            self.data['gym_details'] = {}
-        
-        self.data['gym_details']['name'] = name
-        self.data['gym_details']['currency'] = currency
-        if logo_path:
-            self.data['gym_details']['logo'] = logo_path
-            
-        self.save_data()
-        return True
-    
-    def save_data(self):
-        """Save data to JSON file"""
-        with open(self.data_file, 'w') as f:
-            json.dump(self.data, f, indent=2)
-
-    def reset_data(self):
-        """Reset everything (Factory Reset) for this user"""
-        self.data = self._create_empty_data()
-        self.save_data()
-        return True
-    
-    # Removed signup_admin, login_admin, has_admin - handled by AuthManager now
-    
-    def add_member(self, name: str, phone: str, photo: str = None, membership_type: str = 'Gym', joined_date: str = None, is_trial: bool = False, email: str = None) -> int:
-        """Add a new member"""
-        member_id = str(self.data['next_member_id'])
-        if not joined_date:
-            joined_date = datetime.now().strftime('%Y-%m-%d')
-            
-        trial_end = None
-        if is_trial:
-            trial_end = (datetime.strptime(joined_date, '%Y-%m-%d') + timedelta(days=3)).strftime('%Y-%m-%d')
-            
-        self.data['members'][member_id] = {
-            'id': member_id,
-            'name': name,
-            'phone': phone,
-            'email': email or '',
-            'photo': photo,
-            'joined_date': joined_date,
-            'active': True,
-            'membership_type': membership_type,
-            'is_trial': is_trial,
-            'trial_end_date': trial_end
-        }
-        self.data['next_member_id'] += 1
-        self.save_data()
-        return int(member_id)
-
-    def update_member(self, member_id: str, name: str, phone: str, membership_type: str, joined_date: Optional[str] = None, email: str = None) -> bool:
-        """Update member details"""
-        if member_id not in self.data['members']:
-            return False
-        
-        self.data['members'][member_id]['name'] = name
-        self.data['members'][member_id]['phone'] = phone
-        self.data['members'][member_id]['membership_type'] = membership_type
-        
-        if email is not None:
-            self.data['members'][member_id]['email'] = email
-        
-        if joined_date:
-            self.data['members'][member_id]['joined_date'] = joined_date
-            
-        self.save_data()
-        return True
-
-    def delete_member(self, member_id: str) -> bool:
-        """Delete a member and their fees"""
-        if member_id not in self.data['members']:
-            return False
-        
-        del self.data['members'][member_id]
-        if member_id in self.data['fees']:
-            del self.data['fees'][member_id]
-            
-        self.save_data()
-        return True
-    
-    # Expense Management Methods
-    def add_expense(self, category: str, amount: float, date: str, description: str = '') -> bool:
-        """Add an expense record"""
-        if 'expenses' not in self.data:
-            self.data['expenses'] = {}
-        
-        expense_id = f"EXP{len(self.data['expenses']) + 1:04d}"
-        self.data['expenses'][expense_id] = {
-            'id': expense_id,
-            'category': category,
-            'amount': amount,
-            'date': date,
-            'description': description
-        }
-        self.save_data()
-        return True
-    
-    def get_expenses(self, month: str = None) -> list:
-        """Get all expenses or filter by month"""
-        if 'expenses' not in self.data:
-            return []
-        
-        expenses = list(self.data['expenses'].values())
-        
-        if month:
-            expenses = [e for e in expenses if e['date'].startswith(month)]
-        
-        # Sort by date descending
-        expenses.sort(key=lambda x: x['date'], reverse=True)
-        return expenses
-    
-    def delete_expense(self, expense_id: str) -> bool:
-        """Delete an expense"""
-        if 'expenses' not in self.data or expense_id not in self.data['expenses']:
-            return False
-        
-        del self.data['expenses'][expense_id]
-        self.save_data()
-        return True
-    
-    def calculate_profit_loss(self, month: str) -> Dict:
-        """Calculate P&L for a given month"""
-        # Get revenue
-        status = self.get_payment_status(month)
-        revenue = sum(m.get('amount', 0) for m in status['paid'])
-        
-        # Get expenses
-        expenses = self.get_expenses(month)
-        total_expenses = sum(e['amount'] for e in expenses)
-        
-        # Calculate profit
-        net_profit = revenue - total_expenses
-        profit_margin = (net_profit / revenue * 100) if revenue > 0 else 0
+        """Get gym name, logo, and currency"""
+        if not self.gym:
+            return {'name': 'Gym Manager', 'logo': None, 'currency': 'Rs'}
         
         return {
-            'revenue': revenue,
-            'expenses': total_expenses,
-            'net_profit': net_profit,
-            'profit_margin': round(profit_margin, 2)
+            'name': self.gym.name,
+            'logo': self.gym.logo_url,
+            'currency': self.gym.currency
+        }
+    
+    def update_gym_details(self, name: str, logo_path: Optional[str] = None, currency: str = 'Rs') -> bool:
+        """Update gym name, logo, and currency"""
+        if not self.gym:
+            return False
+        
+        self.gym.name = name
+        self.gym.currency = currency
+        if logo_path:
+            self.gym.logo_url = logo_path
+        
+        self.session.commit()
+        return True
+    
+    def add_member(self, name: str, phone: str, photo: str = None, membership_type: str = 'Gym', 
+                   joined_date: str = None, is_trial: bool = False, email: str = None) -> int:
+        """Add a new member"""
+        if not self.gym:
+            return 0
+        
+        if not joined_date:
+            joined_date = datetime.now().strftime('%Y-%m-%d')
+        
+        trial_end = None
+        if is_trial:
+            trial_end = (datetime.strptime(joined_date, '%Y-%m-%d') + timedelta(days=3)).date()
+        
+        member = Member(
+            gym_id=self.gym.id,
+            name=name,
+            phone=phone,
+            email=email or '',
+            photo_url=photo,
+            membership_type=membership_type,
+            joined_date=datetime.strptime(joined_date, '%Y-%m-%d').date(),
+            is_trial=is_trial,
+            trial_end_date=trial_end
+        )
+        
+        self.session.add(member)
+        self.session.commit()
+        return member.id
+    
+    def update_member(self, member_id: str, name: str, phone: str, membership_type: str, 
+                     joined_date: Optional[str] = None, email: str = None) -> bool:
+        """Update member details"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
+            return False
+        
+        member.name = name
+        member.phone = phone
+        member.membership_type = membership_type
+        
+        if email is not None:
+            member.email = email
+        
+        if joined_date:
+            member.joined_date = datetime.strptime(joined_date, '%Y-%m-%d').date()
+        
+        self.session.commit()
+        return True
+    
+    def delete_member(self, member_id: str) -> bool:
+        """Delete a member and their fees"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
+            return False
+        
+        self.session.delete(member)
+        self.session.commit()
+        return True
+    
+    def get_member(self, member_id: str) -> Optional[Dict]:
+        """Get member details"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
+            return None
+        
+        return {
+            'id': str(member.id),
+            'name': member.name,
+            'phone': member.phone,
+            'email': member.email,
+            'photo': member.photo_url,
+            'membership_type': member.membership_type,
+            'joined_date': member.joined_date.strftime('%Y-%m-%d'),
+            'active': member.is_active,
+            'is_trial': member.is_trial,
+            'trial_end_date': member.trial_end_date.strftime('%Y-%m-%d') if member.trial_end_date else None
         }
     
     def get_all_members(self) -> List[Dict]:
-        """Get all members as a list"""
-        return list(self.data['members'].values())
+        """Get all members"""
+        if not self.gym:
+            return []
+        
+        members = self.session.query(Member).filter_by(gym_id=self.gym.id, is_active=True).all()
+        return [
+            {
+                'id': str(m.id),
+                'name': m.name,
+                'phone': m.phone,
+                'email': m.email,
+                'photo': m.photo_url,
+                'membership_type': m.membership_type,
+                'joined_date': m.joined_date.strftime('%Y-%m-%d'),
+                'active': m.is_active,
+                'is_trial': m.is_trial,
+                'trial_end_date': m.trial_end_date.strftime('%Y-%m-%d') if m.trial_end_date else None
+            }
+            for m in members
+        ]
     
-    def get_member(self, member_id: str) -> Optional[Dict]:
-        """Get a specific member"""
-        return self.data['members'].get(member_id)
+    def search_members(self, query: str) -> List[Dict]:
+        """Search members by name or phone"""
+        if not self.gym:
+            return []
+        
+        members = self.session.query(Member).filter(
+            Member.gym_id == self.gym.id,
+            Member.is_active == True,
+            (Member.name.ilike(f'%{query}%')) | (Member.phone.ilike(f'%{query}%'))
+        ).all()
+        
+        return [
+            {
+                'id': str(m.id),
+                'name': m.name,
+                'phone': m.phone,
+                'membership_type': m.membership_type
+            }
+            for m in members
+        ]
     
-    def pay_fee(self, member_id: str, month: str, amount: float = 0, paid_date: str = None, notes: str = None) -> bool:
-        """Record fee payment for a member"""
-        if member_id not in self.data['members']:
+    def record_fee(self, member_id: str, month: str, amount: float = 0, date: str = None) -> bool:
+        """Record a fee payment"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
             return False
         
-        if member_id not in self.data['fees']:
-            self.data['fees'][member_id] = {}
+        if not date:
+            date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        if not paid_date:
-            paid_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            
-        self.data['fees'][member_id][month] = {
-            'amount': amount,
-            'paid_date': paid_date,
-            'notes': notes or ''
-        }
-        self.save_data()
+        # Check if fee already exists
+        existing_fee = self.session.query(Fee).filter_by(member_id=member.id, month=month).first()
+        if existing_fee:
+            return False
+        
+        fee = Fee(
+            member_id=member.id,
+            month=month,
+            amount=amount,
+            paid_date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        )
+        
+        self.session.add(fee)
+        self.session.commit()
+        return True
+    
+    def update_fee(self, member_id: str, month: str, amount: float, date: str) -> bool:
+        """Update an existing fee record"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
+            return False
+        
+        fee = self.session.query(Fee).filter_by(member_id=member.id, month=month).first()
+        if not fee:
+            return False
+        
+        fee.amount = amount
+        fee.paid_date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        
+        self.session.commit()
         return True
     
     def delete_fee(self, member_id: str, month: str) -> bool:
         """Delete a fee record"""
-        if member_id not in self.data['fees'] or month not in self.data['fees'][member_id]:
-            return False
-            
-        del self.data['fees'][member_id][month]
-        self.save_data()
-        return True
-
-    def update_fee(self, member_id: str, month: str, amount: float, date: str, notes: str = None) -> bool:
-        """Update a fee record"""
-        if member_id not in self.data['fees'] or month not in self.data['fees'][member_id]:
-            return False
-            
-        self.data['fees'][member_id][month]['amount'] = amount
-        self.data['fees'][member_id][month]['paid_date'] = date
-        if notes is not None:
-            self.data['fees'][member_id][month]['notes'] = notes
-        
-        self.save_data()
-        return True
-
-    def is_fee_paid(self, member_id: str, month: str) -> bool:
-        """Check if fee is paid for a specific month"""
-        if member_id not in self.data['fees']:
-            return False
-        return month in self.data['fees'][member_id]
-
-    def log_attendance(self, member_id: str, emotion: str = None, confidence: float = None) -> bool:
-        """Log a visit for the member with optional emotion data"""
-        if member_id not in self.data['members']:
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
             return False
         
-        if 'attendance' not in self.data:
-            self.data['attendance'] = {}
-            
-        if member_id not in self.data['attendance']:
-            self.data['attendance'][member_id] = []
-            
-        # Add timestamp with emotion data
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        attendance_record = {
-            'timestamp': timestamp,
-            'emotion': emotion,
-            'confidence': confidence
-        }
+        fee = self.session.query(Fee).filter_by(member_id=member.id, month=month).first()
+        if not fee:
+            return False
         
-        self.data['attendance'][member_id].append(attendance_record)
-        self.save_data()
+        self.session.delete(fee)
+        self.session.commit()
         return True
-
-    def get_attendance(self, member_id: str) -> List:
-        """Get attendance history for a member"""
-        if 'attendance' not in self.data:
-            return []
-        attendance = self.data['attendance'].get(member_id, [])
-        # Reverse for newest first
-        return attendance[::-1]
     
-    # --- Class Scheduling Methods ---
-    def add_class(self, name: str, day: str, time: str, instructor: str, capacity: int) -> str:
-        """Add a new fitness class"""
-        if 'classes' not in self.data:
-            self.data['classes'] = {}
-            
-        class_id = str(len(self.data['classes']) + 1)
-        self.data['classes'][class_id] = {
-            'id': class_id,
-            'name': name,
-            'day': day, # e.g., "Monday"
-            'time': time, # e.g., "17:00"
-            'instructor': instructor,
-            'capacity': int(capacity),
-            'attendees': []
-        }
-        self.save_data()
-        return class_id
-        
-    def book_class(self, member_id: str, class_id: str) -> bool:
-        """Book a member into a class"""
-        if 'classes' not in self.data or class_id not in self.data['classes']:
+    def is_fee_paid(self, member_id: str, month: str) -> bool:
+        """Check if fee is paid for a month"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
             return False
-            
-        cls = self.data['classes'][class_id]
-        if member_id in cls['attendees']:
-            return True # Already booked
-            
-        if len(cls['attendees']) >= cls['capacity']:
-            return False # Full
-            
-        cls['attendees'].append(member_id)
-        self.save_data()
-        return True
         
-    def get_classes(self) -> List[Dict]:
-        """Get all classes"""
-        if 'classes' not in self.data:
-            return []
-        return list(self.data['classes'].values())
-
-    def get_payment_status(self, month: Optional[str] = None) -> Dict[str, List[Dict]]:
-        """Get paid/unpaid members for a specific month"""
-        if month is None:
+        fee = self.session.query(Fee).filter_by(member_id=member.id, month=month).first()
+        return fee is not None
+    
+    def get_payment_status(self, month: str = None) -> Dict:
+        """Get payment status for a month"""
+        if not month:
             month = datetime.now().strftime('%Y-%m')
+        
+        if not self.gym:
+            return {'paid': [], 'unpaid': []}
+        
+        all_members = self.session.query(Member).filter_by(gym_id=self.gym.id, is_active=True).all()
         
         paid = []
         unpaid = []
         
-        for member_id, member in self.data['members'].items():
-            if self.is_fee_paid(member_id, month):
-                fee_info = self.data['fees'][member_id][month]
-                member_copy = member.copy()
-                member_copy['last_paid'] = fee_info['paid_date']
-                member_copy['amount'] = fee_info['amount']
-                paid.append(member_copy)
+        for member in all_members:
+            fee = self.session.query(Fee).filter_by(member_id=member.id, month=month).first()
+            
+            member_data = {
+                'id': str(member.id),
+                'name': member.name,
+                'phone': member.phone,
+                'membership_type': member.membership_type
+            }
+            
+            if fee:
+                member_data['amount'] = float(fee.amount)
+                member_data['date'] = fee.paid_date.strftime('%Y-%m-%d %H:%M:%S')
+                paid.append(member_data)
             else:
-                unpaid.append(member)
+                unpaid.append(member_data)
         
         return {'paid': paid, 'unpaid': unpaid}
     
-    def get_member_fee_history(self, member_id: str) -> List[Dict]:
-        """Get fee payment history for a member"""
-        if member_id not in self.data['fees']:
+    def get_member_fees(self, member_id: str) -> List[Dict]:
+        """Get all fees for a member"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
             return []
         
-        history = []
-        for month, info in self.data['fees'][member_id].items():
-            history.append({
-                'month': month,
-                'amount': info['amount'],
-                'paid_date': info['paid_date'],
-                'notes': info.get('notes', '')
-            })
-        return sorted(history, key=lambda x: x['month'], reverse=True)
-    
-    def get_payment_history(self, member_id: str) -> List[Dict]:
-        """Alias for get_member_fee_history for compatibility"""
-        return self.get_member_fee_history(member_id)
-    
-    def bulk_import_members(self, file_path: str) -> Tuple[int, int, List[str]]:
-        """
-        Import members from Excel/CSV file
+        fees = self.session.query(Fee).filter_by(member_id=member.id).order_by(Fee.month.desc()).all()
         
-        Args:
-            file_path: Path to Excel (.xlsx) or CSV (.csv) file
-            
-        Returns:
-            Tuple of (success_count, error_count, error_messages)
-        """
-        success_count = 0
-        error_count = 0
-        errors = []
+        return [
+            {
+                'month': f.month,
+                'amount': float(f.amount),
+                'date': f.paid_date.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            for f in fees
+        ]
+    
+    def get_revenue(self, month: str = None) -> float:
+        """Get total revenue for a month"""
+        if not month:
+            month = datetime.now().strftime('%Y-%m')
+        
+        if not self.gym:
+            return 0.0
+        
+        # Get all members for this gym
+        member_ids = [m.id for m in self.session.query(Member).filter_by(gym_id=self.gym.id).all()]
+        
+        total = self.session.query(func.sum(Fee.amount)).filter(
+            Fee.member_id.in_(member_ids),
+            Fee.month == month
+        ).scalar()
+        
+        return float(total) if total else 0.0
+    
+    def log_attendance(self, member_id: str, emotion: str = None, confidence: float = None) -> bool:
+        """Log member attendance"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
+            return False
+        
+        attendance = Attendance(
+            member_id=member.id,
+            check_in_time=datetime.now(),
+            emotion=emotion,
+            confidence=confidence
+        )
+        
+        self.session.add(attendance)
+        self.session.commit()
+        return True
+    
+    def get_attendance(self, member_id: str) -> List:
+        """Get attendance history for a member"""
+        member = self.session.query(Member).filter_by(id=int(member_id), gym_id=self.gym.id).first()
+        if not member:
+            return []
+        
+        records = self.session.query(Attendance).filter_by(member_id=member.id).order_by(Attendance.check_in_time.desc()).all()
+        
+        return [
+            {
+                'timestamp': r.check_in_time.strftime('%Y-%m-%d %H:%M:%S'),
+                'emotion': r.emotion,
+                'confidence': float(r.confidence) if r.confidence else None
+            }
+            for r in records
+        ]
+    
+    # Expense Management
+    def add_expense(self, category: str, amount: float, date: str, description: str = '') -> bool:
+        """Add an expense record"""
+        if not self.gym:
+            return False
+        
+        expense = Expense(
+            gym_id=self.gym.id,
+            category=category,
+            amount=amount,
+            date=datetime.strptime(date, '%Y-%m-%d').date(),
+            description=description
+        )
+        
+        self.session.add(expense)
+        self.session.commit()
+        return True
+    
+    def get_expenses(self, month: str = None) -> list:
+        """Get expenses for a month"""
+        if not self.gym:
+            return []
+        
+        query = self.session.query(Expense).filter_by(gym_id=self.gym.id)
+        
+        if month:
+            year, month_num = map(int, month.split('-'))
+            query = query.filter(
+                extract('year', Expense.date) == year,
+                extract('month', Expense.date) == month_num
+            )
+        
+        expenses = query.order_by(Expense.date.desc()).all()
+        
+        return [
+            {
+                'id': e.id,
+                'category': e.category,
+                'amount': float(e.amount),
+                'date': e.date.strftime('%Y-%m-%d'),
+                'description': e.description
+            }
+            for e in expenses
+        ]
+    
+    def delete_expense(self, expense_id: str) -> bool:
+        """Delete an expense"""
+        expense = self.session.query(Expense).filter_by(id=expense_id, gym_id=self.gym.id).first()
+        if not expense:
+            return False
+        
+        self.session.delete(expense)
+        self.session.commit()
+        return True
+    
+    def bulk_import_members(self, filepath: str) -> Tuple[int, int, List[str]]:
+        """Import members from Excel/CSV file"""
+        import pandas as pd
         
         try:
-            # Read file based on extension
-            if file_path.endswith('.xlsx'):
-                df = pd.read_excel(file_path)
-            elif file_path.endswith('.csv'):
-                df = pd.read_csv(file_path)
+            if filepath.endswith('.csv'):
+                df = pd.read_csv(filepath)
             else:
-                return (0, 0, ['Invalid file format. Use .xlsx or .csv'])
+                df = pd.read_excel(filepath)
             
-            # Validate required columns
-            required_cols = ['Name', 'Phone']
-            missing_cols = [col for col in required_cols if col not in df.columns]
-            if missing_cols:
-                return (0, 0, [f'Missing required columns: {", ".join(missing_cols)}'])
+            success_count = 0
+            error_count = 0
+            errors = []
             
-            # Process each row
             for index, row in df.iterrows():
-                row_num = index + 2  # Excel row number (header is row 1)
-                
                 try:
-                    # Get required fields
                     name = str(row.get('Name', '')).strip()
                     phone = str(row.get('Phone', '')).strip()
                     
-                    # Validate required fields
-                    if not name or pd.isna(row.get('Name')):
-                        errors.append(f'Row {row_num}: Name is required')
+                    if not name or not phone:
+                        errors.append(f"Row {index + 2}: Missing name or phone")
                         error_count += 1
                         continue
                     
-                    if not phone or pd.isna(row.get('Phone')):
-                        errors.append(f'Row {row_num}: Phone is required')
-                        error_count += 1
-                        continue
+                    # Check if member exists
+                    existing = self.session.query(Member).filter_by(gym_id=self.gym.id, phone=phone).first()
                     
-                    # Get optional fields
-                    email = str(row.get('Email', '')).strip() if pd.notna(row.get('Email')) else ''
-                    membership_type = str(row.get('Membership Type', 'Gym')).strip()
-                    joined_date = row.get('Joined Date')
-                    
-                    # Parse joined date
-                    if pd.notna(joined_date):
-                        if isinstance(joined_date, str):
-                            try:
-                                joined_date = datetime.strptime(joined_date, '%Y-%m-%d').strftime('%Y-%m-%d')
-                            except:
-                                joined_date = datetime.now().strftime('%Y-%m-%d')
-                        elif isinstance(joined_date, pd.Timestamp):
-                            joined_date = joined_date.strftime('%Y-%m-%d')
-                        else:
-                            joined_date = datetime.now().strftime('%Y-%m-%d')
-                    else:
-                        joined_date = datetime.now().strftime('%Y-%m-%d')
-                    
-                    # Check if member exists by phone
-                    existing_member = None
-                    for mid, member in self.data['members'].items():
-                        if member.get('phone') == phone:
-                            existing_member = mid
-                            break
-                    
-                    if existing_member:
+                    if existing:
                         # Update existing member
-                        self.update_member(
-                            existing_member,
-                            name=name,
-                            phone=phone,
-                            membership_type=membership_type,
-                            joined_date=joined_date,
-                            email=email
-                        )
+                        existing.name = name
+                        existing.email = str(row.get('Email', '')).strip()
+                        existing.membership_type = str(row.get('Membership Type', 'Gym')).strip()
                         success_count += 1
                     else:
                         # Add new member
-                        self.add_member(
+                        joined_date = row.get('Joined Date', datetime.now().strftime('%Y-%m-%d'))
+                        if pd.isna(joined_date):
+                            joined_date = datetime.now().strftime('%Y-%m-%d')
+                        
+                        member = Member(
+                            gym_id=self.gym.id,
                             name=name,
                             phone=phone,
-                            email=email,
-                            membership_type=membership_type,
-                            joined_date=joined_date
+                            email=str(row.get('Email', '')).strip(),
+                            membership_type=str(row.get('Membership Type', 'Gym')).strip(),
+                            joined_date=datetime.strptime(str(joined_date), '%Y-%m-%d').date()
                         )
+                        self.session.add(member)
                         success_count += 1
-                        
+                
                 except Exception as e:
-                    errors.append(f'Row {row_num}: {str(e)}')
+                    errors.append(f"Row {index + 2}: {str(e)}")
                     error_count += 1
             
-            return (success_count, error_count, errors)
-            
+            self.session.commit()
+            return success_count, error_count, errors
+        
         except Exception as e:
-            return (0, 0, [f'File processing error: {str(e)}'])
+            return 0, 0, [f"File error: {str(e)}"]
     
-    def find_member_by_phone(self, phone: str) -> Optional[Dict]:
-        """Find a member by phone number"""
-        for member_id, member in self.data['members'].items():
-            if member.get('phone') == phone:
-                return member
-        return None
+    def __del__(self):
+        """Close database session"""
+        if hasattr(self, 'session'):
+            self.session.close()
