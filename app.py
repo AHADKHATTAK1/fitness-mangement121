@@ -21,6 +21,14 @@ from google_wallet import GymWalletPass
 # Load environment variables from .env file
 load_dotenv()
 
+# Initialize database tables on startup
+try:
+    from models import init_db
+    init_db()
+    print("✅ Database initialized")
+except Exception as e:
+    print(f"⚠️ Database init warning: {str(e)}")
+
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key-change-in-production')
 
